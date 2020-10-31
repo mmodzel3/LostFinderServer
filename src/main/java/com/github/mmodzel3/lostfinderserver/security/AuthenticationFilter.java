@@ -15,6 +15,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
 class AuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+
     private static final String AUTHORIZATION = "Authorization: ";
 
     AuthenticationFilter(final RequestMatcher requiresAuth) {

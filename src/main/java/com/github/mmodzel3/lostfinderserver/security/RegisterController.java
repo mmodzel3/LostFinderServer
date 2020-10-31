@@ -7,8 +7,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("register")
 public class RegisterController {
 
-    @Autowired
-    AuthenticationService authenticationService;
+    final AuthenticationService authenticationService;
+
+    public RegisterController(AuthenticationService authenticationService) {
+        this.authenticationService = authenticationService;
+    }
 
     @GetMapping
     String register(@RequestParam String email, @RequestParam String password, @RequestParam String username) {

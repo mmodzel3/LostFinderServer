@@ -20,18 +20,20 @@ public class InitialUserLoader implements ApplicationRunner {
     private static final String USER_PASSWORD = "admin";
     private static final String USER_NAME = "Owner";
 
-    @Autowired
-    private UserRepository userRepository;
+    private final UserRepository userRepository;
+    private final AuthenticationService authenticationService;
+    private final PasswordEncoder passwordEncoder;
 
-    @Autowired
-    private AuthenticationService authenticationService;
-
-    @Autowired
-    private PasswordEncoder passwordEncoder;
+    public InitialUserLoader(UserRepository userRepository, AuthenticationService authenticationService,
+                             PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.authenticationService = authenticationService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     public void run(ApplicationArguments args) {
         Optional<User> owner = userRepository.findByEmail(USER_EMAIL);
-        
+
         if (owner.isEmpty()) {
             createInitialUser();
         }

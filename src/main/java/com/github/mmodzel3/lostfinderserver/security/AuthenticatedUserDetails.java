@@ -9,6 +9,7 @@ import java.util.Collection;
 import java.util.Collections;
 
 class AuthenticatedUserDetails implements UserDetails {
+
     private User user;
 
     AuthenticatedUserDetails(User user) {
