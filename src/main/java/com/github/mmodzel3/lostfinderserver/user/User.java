@@ -29,18 +29,16 @@ public class User {
     @Indexed(unique = true)
     private String token;
 
+    private UserRole role;
+
     public User() {
 
     }
 
-    public User(String email, String password) {
-        this.email = email;
-        this.password = password;
-    }
-
-    public User(String email, String password, String username) {
+    public User(String email, String password, String username, UserRole role) {
         this.email = email;
         this.password = password;
         this.username = username;
+        this.role = role;
     }
 }

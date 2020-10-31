@@ -2,6 +2,7 @@ package com.github.mmodzel3.lostfinderserver.security;
 
 import com.github.mmodzel3.lostfinderserver.user.User;
 import com.github.mmodzel3.lostfinderserver.user.UserRepository;
+import com.github.mmodzel3.lostfinderserver.user.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -37,11 +38,15 @@ public class AuthenticationService {
         return user.map(AuthenticatedUserDetails::new);
     }
 
-    public String register(String email, String password, String username) {
+    public String register(String email, String password, String username, UserRole role) {
         String encodedPassword = passwordEncoder.encode(password);
-        User user = new User(email, encodedPassword, username);
+        User user = new User(email, encodedPassword, username, role);
         userRepository.save(user);
 
         return login(email, password);
+    }
+
+    public String register(String email, String password, String username) {
+        return this.register(email, password, username, UserRole.USER);
     }
 }

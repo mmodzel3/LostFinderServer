@@ -3,6 +3,7 @@ package com.github.mmodzel3.lostfinderserver;
 import com.github.mmodzel3.lostfinderserver.security.AuthenticationService;
 import com.github.mmodzel3.lostfinderserver.user.User;
 import com.github.mmodzel3.lostfinderserver.user.UserRepository;
+import com.github.mmodzel3.lostfinderserver.user.UserRole;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
@@ -30,13 +31,13 @@ public class InitialUserLoader implements ApplicationRunner {
 
     public void run(ApplicationArguments args) {
         Optional<User> owner = userRepository.findByEmail(USER_EMAIL);
-
+        
         if (owner.isEmpty()) {
             createInitialUser();
         }
     }
 
     private void createInitialUser() {
-        authenticationService.register(USER_EMAIL, USER_PASSWORD, USER_NAME);
+        authenticationService.register(USER_EMAIL, USER_PASSWORD, USER_NAME, UserRole.OWNER);
     }
 }
