@@ -10,6 +10,7 @@ import java.util.Collections;
 
 class AuthenticatedUserDetails implements UserDetails {
 
+    private static final String ROLE_PREFIX = "ROLE_";
     private User user;
 
     AuthenticatedUserDetails(User user) {
@@ -18,9 +19,8 @@ class AuthenticatedUserDetails implements UserDetails {
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return Collections.singletonList(new SimpleGrantedAuthority(
-                "ROLE_USER"
-        ));
+        String role = ROLE_PREFIX + user.getRole().toString();
+        return Collections.singletonList(new SimpleGrantedAuthority(role));
     }
 
     @Override
