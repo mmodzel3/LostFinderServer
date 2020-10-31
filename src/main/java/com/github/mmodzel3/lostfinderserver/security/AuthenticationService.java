@@ -11,7 +11,7 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Service
-class AuthenticationService {
+public class AuthenticationService {
 
     @Autowired
     private UserRepository userRepository;
@@ -19,7 +19,7 @@ class AuthenticationService {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
-    String login(String email, String password) {
+    public String login(String email, String password) {
         Optional<User> user = userRepository.findByEmail(email);
 
         return user
@@ -35,5 +35,13 @@ class AuthenticationService {
     Optional<AuthenticatedUserDetails> findAuthenticatedUserByToken(String token) {
         Optional<User> user = userRepository.findByToken(token);
         return user.map(AuthenticatedUserDetails::new);
+    }
+
+    public String register(String email, String password, String username) {
+        String encodedPassword = passwordEncoder.encode(password);
+        User user = new User(email, encodedPassword, username);
+        userRepository.save(user);
+
+        return login(email, password);
     }
 }
