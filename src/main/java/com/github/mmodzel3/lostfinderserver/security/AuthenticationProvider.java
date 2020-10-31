@@ -11,7 +11,7 @@ import org.springframework.stereotype.Component;
 import java.util.Optional;
 
 @Component
-public class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
+class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
     @Autowired
     AuthenticationService authenticationService;

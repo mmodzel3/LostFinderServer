@@ -7,7 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-@Document(collation = "user")
+@Document(collection = "users")
 @Getter
 @Setter
 public class User {
@@ -29,7 +29,7 @@ public class User {
     @Indexed(unique = true)
     private String token;
 
-    User(String email, String password) {
+    public User(String email, String password) {
         this.email = email;
         this.password = password;
     }
