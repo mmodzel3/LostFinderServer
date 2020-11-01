@@ -1,6 +1,6 @@
 package com.github.mmodzel3.lostfinderserver.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.github.mmodzel3.lostfinderserver.authentication.AuthenticationService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.AbstractUserDetailsAuthenticationProvider;
 import org.springframework.security.core.AuthenticationException;

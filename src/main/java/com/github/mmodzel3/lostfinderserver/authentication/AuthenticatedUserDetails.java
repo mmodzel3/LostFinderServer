@@ -1,4 +1,4 @@
-package com.github.mmodzel3.lostfinderserver.security;
+package com.github.mmodzel3.lostfinderserver.authentication;
 
 import com.github.mmodzel3.lostfinderserver.user.User;
 import org.springframework.security.core.GrantedAuthority;
@@ -8,7 +8,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.Collections;
 
-class AuthenticatedUserDetails implements UserDetails {
+public class AuthenticatedUserDetails implements UserDetails {
 
     private static final String ROLE_PREFIX = "ROLE_";
     private User user;
