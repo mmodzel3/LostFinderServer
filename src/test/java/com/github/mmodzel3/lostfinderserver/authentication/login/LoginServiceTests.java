@@ -29,7 +29,6 @@ class LoginServiceTests extends UserTestsAbstract {
     @Test
     void whenLoginToExistingUserThenGotToken() {
         String token = loginService.login(USER_EMAIL, USER_PASSWORD);
-        deleteTestUser();
 
         assertNotEquals(StringUtils.EMPTY, token);
     }

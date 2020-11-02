@@ -1,6 +1,7 @@
 package com.github.mmodzel3.lostfinderserver.authentication.login;
 
-import com.github.mmodzel3.lostfinderserver.security.TokenGenerator;
+import com.github.mmodzel3.lostfinderserver.security.TokenDetails;
+import com.github.mmodzel3.lostfinderserver.security.TokenProvider;
 import com.github.mmodzel3.lostfinderserver.user.User;
 import com.github.mmodzel3.lostfinderserver.user.UserRepository;
 import org.apache.commons.lang3.StringUtils;
@@ -14,12 +15,12 @@ class LoginService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
-    private final TokenGenerator tokenGenerator;
+    private final TokenProvider tokenProvider;
 
-    LoginService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenGenerator tokenGenerator) {
+    LoginService(UserRepository userRepository, PasswordEncoder passwordEncoder, TokenProvider tokenProvider) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
-        this.tokenGenerator = tokenGenerator;
+        this.tokenProvider = tokenProvider;
     }
 
     String login(String email, String password) {
@@ -27,11 +28,6 @@ class LoginService {
 
         return user
                 .filter((u) -> passwordEncoder.matches(password, u.getPassword()))
-                .map(u -> {
-                    String token = tokenGenerator.generate();
-                    u.setToken(token);
-                    userRepository.save(u);
-                    return token;
-                }).orElse(StringUtils.EMPTY);
+                .map(u -> tokenProvider.generateToken(new TokenDetails(u.getEmail()))).orElse(StringUtils.EMPTY);
     }
 }

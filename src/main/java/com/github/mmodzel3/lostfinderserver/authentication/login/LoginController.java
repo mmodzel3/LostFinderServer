@@ -17,6 +17,7 @@ class LoginController {
 
     @PostMapping
     String login(@RequestParam String email, @RequestParam String password) {
+        System.out.println("Here!");
         return loginService.login(email, password);
     }
 }

@@ -16,7 +16,8 @@ import java.io.IOException;
 
 class AuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
-    private static final String AUTHORIZATION = "Authorization: ";
+    private static final String AUTHORIZATION = "Authorization";
+    private static final String BEARER = "Bearer";
 
     AuthenticationFilter(final RequestMatcher requiresAuth) {
         super(requiresAuth);
@@ -26,8 +27,14 @@ class AuthenticationFilter extends AbstractAuthenticationProcessingFilter {
     public Authentication attemptAuthentication(HttpServletRequest httpServletRequest,
                                                 HttpServletResponse httpServletResponse)
             throws AuthenticationException {
-        String token = httpServletRequest.getHeader(AUTHORIZATION);
-        token= StringUtils.removeStart(token, "Bearer").trim();
+        String header = httpServletRequest.getHeader(AUTHORIZATION);
+
+        if (header == null || !header.startsWith(BEARER)) {
+            throw new NoTokenException("No JWT token in request headers.");
+        }
+
+        String token = StringUtils.removeStart(header, BEARER).trim();
+
         Authentication requestAuthentication = new UsernamePasswordAuthenticationToken(token, token);
         return getAuthenticationManager().authenticate(requestAuthentication);
     }

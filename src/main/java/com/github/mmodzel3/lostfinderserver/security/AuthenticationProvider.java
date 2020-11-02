@@ -13,10 +13,12 @@ import java.util.Optional;
 @Component
 class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
 
-    final AuthenticationService authenticationService;
+    private final AuthenticationService authenticationService;
+    private final TokenProvider tokenProvider;
 
-    public AuthenticationProvider(AuthenticationService authenticationService) {
+    public AuthenticationProvider(AuthenticationService authenticationService, TokenProvider tokenProvider) {
         this.authenticationService = authenticationService;
+        this.tokenProvider = tokenProvider;
     }
 
     @Override
@@ -33,7 +35,9 @@ class AuthenticationProvider extends AbstractUserDetailsAuthenticationProvider {
         return Optional
                 .ofNullable(token)
                 .map(String::valueOf)
-                .flatMap(authenticationService::findAuthenticatedUserByToken)
+                .map(tokenProvider::parseToken)
+                .map(TokenDetails::getUserEmail)
+                .flatMap(authenticationService::findUserByEmail)
                 .orElseThrow(() -> new UsernameNotFoundException("Cannot find user with authentication token=" + token));
     }
 }
