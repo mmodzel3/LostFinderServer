@@ -1,6 +1,7 @@
 package com.github.mmodzel3.lostfinderserver.security;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import com.github.mmodzel3.lostfinderserver.security.authentication.AuthenticationFilter;
+import com.github.mmodzel3.lostfinderserver.security.authentication.AuthenticationProvider;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;

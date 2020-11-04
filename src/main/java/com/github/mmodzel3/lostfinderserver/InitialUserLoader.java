@@ -1,16 +1,10 @@
 package com.github.mmodzel3.lostfinderserver;
 
-import com.github.mmodzel3.lostfinderserver.authentication.AuthenticationService;
-import com.github.mmodzel3.lostfinderserver.authentication.register.RegisterService;
-import com.github.mmodzel3.lostfinderserver.user.User;
-import com.github.mmodzel3.lostfinderserver.user.UserRepository;
+import com.github.mmodzel3.lostfinderserver.security.authentication.register.RegisterService;
 import com.github.mmodzel3.lostfinderserver.user.UserRole;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-
-import java.util.Optional;
 
 @Component
 public class InitialUserLoader implements ApplicationRunner {

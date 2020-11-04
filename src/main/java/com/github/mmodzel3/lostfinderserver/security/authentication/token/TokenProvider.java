@@ -1,10 +1,8 @@
-package com.github.mmodzel3.lostfinderserver.security;
+package com.github.mmodzel3.lostfinderserver.security.authentication.token;
 
-import com.github.mmodzel3.lostfinderserver.user.User;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -15,7 +13,7 @@ import java.util.UUID;
 @Service
 public class TokenProvider {
 
-    @Value("${jwt.secret:A94kZt+2iJKbFw8atLuC3wYxN4ZIh5XwJg62pVFjNfg=A}")
+    @Value("${jwt.secret}")
     private String secret;
 
     @Value("${jwt.expiration:86400000}")
@@ -36,7 +34,7 @@ public class TokenProvider {
                 .compact();
     }
 
-    TokenDetails parseToken(String token) throws InvalidTokenException {
+    public TokenDetails parseToken(String token) throws InvalidTokenException {
         try {
             Claims claims = Jwts.parserBuilder()
                     .setSigningKey(getSigningKey())

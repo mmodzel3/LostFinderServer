@@ -1,4 +1,4 @@
-package com.github.mmodzel3.lostfinderserver.authentication.register;
+package com.github.mmodzel3.lostfinderserver.security.authentication.register;
 
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

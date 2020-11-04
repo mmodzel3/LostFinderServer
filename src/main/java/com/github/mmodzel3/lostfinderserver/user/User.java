@@ -17,6 +17,7 @@ import java.util.Collections;
 @Setter
 @Document(collection = "users")
 public class User implements UserDetails {
+
     private static final String ROLE_PREFIX = "ROLE_";
 
     @Id

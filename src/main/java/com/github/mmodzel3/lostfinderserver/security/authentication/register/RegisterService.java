@@ -1,10 +1,9 @@
-package com.github.mmodzel3.lostfinderserver.authentication.register;
+package com.github.mmodzel3.lostfinderserver.security.authentication.register;
 
-import com.github.mmodzel3.lostfinderserver.security.TokenProvider;
+import com.github.mmodzel3.lostfinderserver.security.authentication.token.TokenProvider;
 import com.github.mmodzel3.lostfinderserver.user.User;
 import com.github.mmodzel3.lostfinderserver.user.UserRepository;
 import com.github.mmodzel3.lostfinderserver.user.UserRole;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 

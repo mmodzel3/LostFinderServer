@@ -1,4 +1,4 @@
-package com.github.mmodzel3.lostfinderserver.authentication;
+package com.github.mmodzel3.lostfinderserver.security.authentication;
 
 import com.github.mmodzel3.lostfinderserver.user.User;
 import com.github.mmodzel3.lostfinderserver.user.UserRepository;
@@ -7,7 +7,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-public class AuthenticationService {
+class AuthenticationService {
 
     private final UserRepository userRepository;
 

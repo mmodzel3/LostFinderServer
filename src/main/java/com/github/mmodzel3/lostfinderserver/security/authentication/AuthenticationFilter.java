@@ -1,5 +1,6 @@
-package com.github.mmodzel3.lostfinderserver.security;
+package com.github.mmodzel3.lostfinderserver.security.authentication;
 
+import com.github.mmodzel3.lostfinderserver.security.authentication.token.NoTokenException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -14,12 +15,12 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 
-class AuthenticationFilter extends AbstractAuthenticationProcessingFilter {
+public class AuthenticationFilter extends AbstractAuthenticationProcessingFilter {
 
     private static final String AUTHORIZATION = "Authorization";
     private static final String BEARER = "Bearer";
 
-    AuthenticationFilter(final RequestMatcher requiresAuth) {
+    public AuthenticationFilter(final RequestMatcher requiresAuth) {
         super(requiresAuth);
     }
 

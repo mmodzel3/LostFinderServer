@@ -1,4 +1,4 @@
-package com.github.mmodzel3.lostfinderserver.authentication.login;
+package com.github.mmodzel3.lostfinderserver.security.authentication.login;
 
 import com.github.mmodzel3.lostfinderserver.user.UserTestsAbstract;
 import org.apache.commons.lang3.StringUtils;

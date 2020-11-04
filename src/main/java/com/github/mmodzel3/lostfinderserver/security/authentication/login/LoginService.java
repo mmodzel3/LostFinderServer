@@ -1,7 +1,7 @@
-package com.github.mmodzel3.lostfinderserver.authentication.login;
+package com.github.mmodzel3.lostfinderserver.security.authentication.login;
 
-import com.github.mmodzel3.lostfinderserver.security.TokenDetails;
-import com.github.mmodzel3.lostfinderserver.security.TokenProvider;
+import com.github.mmodzel3.lostfinderserver.security.authentication.token.TokenDetails;
+import com.github.mmodzel3.lostfinderserver.security.authentication.token.TokenProvider;
 import com.github.mmodzel3.lostfinderserver.user.User;
 import com.github.mmodzel3.lostfinderserver.user.UserRepository;
 import org.apache.commons.lang3.StringUtils;

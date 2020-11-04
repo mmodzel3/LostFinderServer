@@ -1,6 +1,6 @@
 package com.github.mmodzel3.lostfinderserver.user;
 
-import com.github.mmodzel3.lostfinderserver.security.TokenProvider;
+import com.github.mmodzel3.lostfinderserver.security.authentication.token.TokenProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
