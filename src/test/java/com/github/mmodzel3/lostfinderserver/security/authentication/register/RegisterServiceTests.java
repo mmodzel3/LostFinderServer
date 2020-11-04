@@ -27,7 +27,7 @@ class RegisterServiceTests extends UserTestsAbstract {
     }
 
     @Test
-    void whenRegisterUserThenUserIsRegistered() {
+    void whenRegisterUserThenUserIsRegistered() throws AccountExistsException {
         registerService.register(USER_EMAIL, USER_PASSWORD, USER_NAME, USER_ROLE);
 
         Optional<User> possibleUser = userRepository.findByEmail(USER_EMAIL);
@@ -41,7 +41,7 @@ class RegisterServiceTests extends UserTestsAbstract {
     void whenRegisterDuplicatedUserThenUserIsNotRegistered() {
         createTestUser();
 
-        assertThrows(org.springframework.dao.DuplicateKeyException.class, () ->
+        assertThrows(AccountExistsException.class, () ->
                 registerService.register(USER_EMAIL, USER_PASSWORD, USER_NAME, USER_ROLE));
     }
 }
