@@ -10,8 +10,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class RegisterServiceTests extends UserTestsAbstract {
@@ -36,5 +35,13 @@ class RegisterServiceTests extends UserTestsAbstract {
         assertTrue(possibleUser.isPresent());
         assertEquals(USER_NAME, possibleUser.get().getUsername());
         assertEquals(USER_ROLE, possibleUser.get().getRole());
+    }
+
+    @Test
+    void whenRegisterDuplicatedUserThenUserIsNotRegistered() {
+        createTestUser();
+
+        assertThrows(org.springframework.dao.DuplicateKeyException.class, () ->
+                registerService.register(USER_EMAIL, USER_PASSWORD, USER_NAME, USER_ROLE));
     }
 }
