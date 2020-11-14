@@ -1,9 +1,6 @@
 package com.github.mmodzel3.lostfinderserver.security.authentication.login;
 
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("login")
@@ -16,7 +13,8 @@ class LoginController {
     }
 
     @PostMapping
-    String login(@RequestParam String email, @RequestParam String password) {
+    @ResponseBody
+    LoginInfo login(@RequestParam String email, @RequestParam String password) {
         return loginService.login(email, password);
     }
 }

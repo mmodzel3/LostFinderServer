@@ -23,11 +23,13 @@ class LoginService {
         this.tokenProvider = tokenProvider;
     }
 
-    String login(String email, String password) {
+    LoginInfo login(String email, String password) {
         Optional<User> user = userRepository.findByEmail(email);
 
-        return user
-                .filter((u) -> passwordEncoder.matches(password, u.getPassword()))
-                .map(u -> tokenProvider.generateToken(new TokenDetails(u.getEmail()))).orElse(StringUtils.EMPTY);
+        String token = user.filter((u) -> passwordEncoder.matches(password, u.getPassword()))
+                .map(u -> tokenProvider.generateToken(new TokenDetails(u.getEmail())))
+                .orElse(StringUtils.EMPTY);
+
+        return new LoginInfo(token);
     }
 }

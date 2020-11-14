@@ -31,23 +31,23 @@ class LoginServiceTests extends UserTestsAbstract {
     }
 
     @Test
-    void whenLoginToExistingUserThenGotToken() {
-        String token = loginService.login(USER_EMAIL, USER_PASSWORD);
+    void whenLoginToExistingUserThenGotLoginInfoWithToken() {
+        LoginInfo loginInfo = loginService.login(USER_EMAIL, USER_PASSWORD);
 
-        assertNotEquals(StringUtils.EMPTY, token);
+        assertNotEquals(StringUtils.EMPTY, loginInfo.getToken());
     }
 
     @Test
-    void whenLoginToNotExistingUserThenGotNoToken() {
-        String token = loginService.login(FAKE_USER_EMAIL, FAKE_USER_PASSWORD);
+    void whenLoginToNotExistingUserThenGotLoginInfoWithNoToken() {
+        LoginInfo loginInfo = loginService.login(FAKE_USER_EMAIL, FAKE_USER_PASSWORD);
 
-        assertEquals(StringUtils.EMPTY, token);
+        assertEquals(StringUtils.EMPTY, loginInfo.getToken());
     }
 
     @Test
-    void whenLoginWithWrongPasswordToUserThenGotNoToken() {
-        String token = loginService.login(USER_EMAIL, FAKE_USER_PASSWORD);
+    void whenLoginWithWrongPasswordToUserThenGotLoginInfoWithNoToken() {
+        LoginInfo loginInfo = loginService.login(USER_EMAIL, FAKE_USER_PASSWORD);
 
-        assertEquals(StringUtils.EMPTY, token);
+        assertEquals(StringUtils.EMPTY, loginInfo.getToken());
     }
 }

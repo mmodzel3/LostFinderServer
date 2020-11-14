@@ -34,43 +34,43 @@ class LoginControllerTests extends UserTestsAbstract {
 
     @Test
     void whenLoginToExistingUserThenGotToken() {
-        String token = given().port(port)
+        LoginInfo loginInfo = given().port(port)
                 .param("email", USER_EMAIL)
                 .param("password", USER_PASSWORD)
                 .post("login")
                 .then()
                 .statusCode(200)
                 .extract()
-                .asString();
+                .as(LoginInfo.class);
 
-        assertNotEquals(StringUtils.EMPTY, token);
+        assertNotEquals(StringUtils.EMPTY, loginInfo.getToken());
     }
 
     @Test
     void whenLoginToNonExistingUserThenGotNoToken() {
-        String token = given().port(port)
+        LoginInfo loginInfo = given().port(port)
                 .param("email", FAKE_USER_EMAIL)
                 .param("password", FAKE_USER_PASSWORD)
                 .post("login")
                 .then()
                 .statusCode(200)
                 .extract()
-                .asString();
+                .as(LoginInfo.class);
 
-        assertEquals(StringUtils.EMPTY, token);
+        assertEquals(StringUtils.EMPTY, loginInfo.getToken());
     }
 
     @Test
-    void whenLoginWithWrongPasswordThenGotNoToken() {
-        String token = given().port(port)
+    void whenLoginWithWrongPasswordThenGotLoginInfoWithNoToken() {
+        LoginInfo loginInfo = given().port(port)
                 .param("email", USER_EMAIL)
                 .param("password", FAKE_USER_PASSWORD)
                 .post("login")
                 .then()
                 .statusCode(200)
                 .extract()
-                .asString();
+                .as(LoginInfo.class);
 
-        assertEquals(StringUtils.EMPTY, token);
+        assertEquals(StringUtils.EMPTY, loginInfo.getToken());
     }
 }
