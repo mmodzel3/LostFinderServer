@@ -11,8 +11,7 @@ import org.springframework.boot.web.server.LocalServerPort;
 import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class UserControllerTests extends AuthenticatedUserTestsAbstract {
@@ -71,5 +70,6 @@ class UserControllerTests extends AuthenticatedUserTestsAbstract {
         assertTrue(possibleUser.isPresent());
         assertEquals(TEST_LATITUDE, possibleUser.get().getLocation().getLatitude());
         assertEquals(TEST_LONGITUDE, possibleUser.get().getLocation().getLongitude());
+        assertNotEquals(testUser.getLastUpdateDate(), possibleUser.get().getLastUpdateDate());
     }
 }

@@ -5,6 +5,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.Optional;
 
 @SpringBootTest
@@ -26,8 +28,10 @@ public abstract class UserTestsAbstract {
     protected User testUser;
 
     protected void createTestUser() {
+        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
         String encodedPassword = passwordEncoder.encode(USER_PASSWORD);
         testUser = new User(USER_EMAIL, encodedPassword, USER_NAME, USER_ROLE);
+        testUser.setLastUpdateDate(yesterday);
 
         userRepository.save(testUser);
     }
