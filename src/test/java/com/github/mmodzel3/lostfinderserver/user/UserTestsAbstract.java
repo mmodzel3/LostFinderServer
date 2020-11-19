@@ -8,7 +8,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import java.util.Optional;
 
 @SpringBootTest
-public class UserTestsAbstract {
+public abstract class UserTestsAbstract {
     protected static final String USER_EMAIL = "test@test.com";
     protected static final String USER_PASSWORD = "test";
     protected static final String USER_NAME = "Test";
@@ -35,5 +35,9 @@ public class UserTestsAbstract {
     protected void deleteTestUser() {
         Optional<User> userOptional = userRepository.findByEmail(USER_EMAIL);
         userOptional.ifPresent(user -> userRepository.delete(user));
+    }
+
+    protected void deleteAllUsers() {
+        userRepository.deleteAll();
     }
 }

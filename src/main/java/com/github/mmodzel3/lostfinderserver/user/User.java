@@ -29,7 +29,6 @@ public class User implements UserDetails {
     private String id;
 
     @Setter(AccessLevel.NONE)
-    @JsonProperty(access = JsonProperty.Access.READ_ONLY)
     @Indexed(unique = true)
     private String email;
 

@@ -16,23 +16,22 @@ import static com.github.mmodzel3.lostfinderserver.server.ServerResponse.OK;
 @RestController
 public class UserController {
 
-    final private UserRepository userRepository;
+    final private UserService userService;
 
-    public UserController(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/api/users")
-    private List<User> getUsers() {
-        return userRepository.findAll();
+    private List<User> getAllUsers() {
+        return userService.getAllUsers();
     }
 
     @PostMapping("/api/user/location")
     private ServerResponse updateUserLocation(@AuthenticationPrincipal Authentication authentication,
                                               @RequestBody Location location) {
         User user = (User) authentication.getPrincipal();
-        user.setLocation(location);
-        userRepository.save(user);
+        userService.updateUserLocation(user, location);
 
         return OK;
     }
