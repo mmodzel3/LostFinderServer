@@ -11,7 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
-class LoginService {
+public class LoginService {
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -23,7 +23,7 @@ class LoginService {
         this.tokenProvider = tokenProvider;
     }
 
-    LoginInfo login(String email, String password) {
+    public LoginInfo login(String email, String password) {
         Optional<User> user = userRepository.findByEmail(email);
 
         String token = user.filter((u) -> passwordEncoder.matches(password, u.getPassword()))

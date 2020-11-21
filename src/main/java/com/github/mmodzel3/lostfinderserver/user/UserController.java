@@ -1,0 +1,38 @@
+package com.github.mmodzel3.lostfinderserver.user;
+
+import com.github.mmodzel3.lostfinderserver.location.Location;
+import com.github.mmodzel3.lostfinderserver.server.ServerResponse;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.web.bind.annotation.*;
+
+import java.security.Principal;
+import java.util.List;
+
+import static com.github.mmodzel3.lostfinderserver.server.ServerResponse.OK;
+
+@RestController
+public class UserController {
+
+    final private UserService userService;
+
+    public UserController(UserService userService) {
+        this.userService = userService;
+    }
+
+    @GetMapping("/api/users")
+    private List<User> getAllUsers() {
+        return userService.getAllUsers();
+    }
+
+    @PostMapping("/api/user/location")
+    private ServerResponse updateUserLocation(@AuthenticationPrincipal Authentication authentication,
+                                              @RequestBody Location location) {
+        User user = (User) authentication.getPrincipal();
+        userService.updateUserLocation(user, location);
+
+        return OK;
+    }
+}

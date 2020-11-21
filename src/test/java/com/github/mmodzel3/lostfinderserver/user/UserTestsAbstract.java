@@ -5,10 +5,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
+import java.time.Period;
 import java.util.Optional;
 
 @SpringBootTest
-public class UserTestsAbstract {
+public abstract class UserTestsAbstract {
     protected static final String USER_EMAIL = "test@test.com";
     protected static final String USER_PASSWORD = "test";
     protected static final String USER_NAME = "Test";
@@ -26,8 +28,10 @@ public class UserTestsAbstract {
     protected User testUser;
 
     protected void createTestUser() {
+        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
         String encodedPassword = passwordEncoder.encode(USER_PASSWORD);
         testUser = new User(USER_EMAIL, encodedPassword, USER_NAME, USER_ROLE);
+        testUser.setLastUpdateDate(yesterday);
 
         userRepository.save(testUser);
     }
@@ -35,5 +39,9 @@ public class UserTestsAbstract {
     protected void deleteTestUser() {
         Optional<User> userOptional = userRepository.findByEmail(USER_EMAIL);
         userOptional.ifPresent(user -> userRepository.delete(user));
+    }
+
+    protected void deleteAllUsers() {
+        userRepository.deleteAll();
     }
 }
