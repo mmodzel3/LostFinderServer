@@ -4,6 +4,7 @@ import com.github.mmodzel3.lostfinderserver.user.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ class ChatService {
     }
 
     List<ChatMessage> getMessages(int page, int pageSize) {
-        Pageable paging = PageRequest.of(page, pageSize);
+        Pageable paging = PageRequest.of(page, pageSize, Sort.by("sendDate").descending());
 
         Page<ChatMessage> messages = chatRepository.findAll(paging);
         return messages.getContent();
