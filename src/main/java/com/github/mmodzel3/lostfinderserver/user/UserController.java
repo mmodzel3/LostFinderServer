@@ -35,4 +35,13 @@ public class UserController {
 
         return OK;
     }
+
+    @PostMapping("/api/user/notification/token")
+    private ServerResponse updateUserNotificationDestToken(@AuthenticationPrincipal Authentication authentication,
+                                              @RequestParam String token) {
+        User user = (User) authentication.getPrincipal();
+        userService.updateUserNotificationDestToken(user, token);
+
+        return OK;
+    }
 }

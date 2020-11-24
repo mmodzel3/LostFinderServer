@@ -20,6 +20,8 @@ class UserControllerTests extends AuthenticatedUserTestsAbstract {
     private final double TEST_LATITUDE = 20.2;
     private final double TEST_LONGITUDE = 23.2;
 
+    private final String TEST_NOTIFICATION_DEST_TOKEN = "token";
+
     @LocalServerPort
     int port;
 
@@ -71,5 +73,24 @@ class UserControllerTests extends AuthenticatedUserTestsAbstract {
         assertEquals(TEST_LATITUDE, possibleUser.get().getLocation().getLatitude());
         assertEquals(TEST_LONGITUDE, possibleUser.get().getLocation().getLongitude());
         assertNotEquals(testUser.getLastUpdateDate(), possibleUser.get().getLastUpdateDate());
+    }
+
+    @Test
+    void whenUpdateNotificationDestTokenThenGotItUpdated() {
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("token", TEST_NOTIFICATION_DEST_TOKEN)
+                .post("/api/user/notification/token")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER_EMAIL);
+
+        assertEquals(ServerResponse.OK, response);
+        assertTrue(possibleUser.isPresent());
+        assertEquals(TEST_NOTIFICATION_DEST_TOKEN, possibleUser.get().getNotificationDestToken());
     }
 }

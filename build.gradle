@@ -26,6 +26,7 @@ dependencies {
     compile 'org.apache.commons:commons-lang3'
     compile 'io.jsonwebtoken:jjwt-api:0.11.2'
     compile 'com.fasterxml.jackson.core:jackson-databind'
+    compile 'com.google.firebase:firebase-admin:7.0.1'
     runtime 'io.jsonwebtoken:jjwt-impl:0.11.2'
     runtime 'io.jsonwebtoken:jjwt-jackson:0.11.2'
     annotationProcessor 'org.projectlombok:lombok'

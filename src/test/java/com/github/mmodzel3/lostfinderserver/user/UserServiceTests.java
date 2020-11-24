@@ -19,6 +19,8 @@ class UserServiceTests extends UserTestsAbstract {
     private final double TEST_LATITUDE = 20.2;
     private final double TEST_LONGITUDE = 23.2;
 
+    private final String TEST_NOTIFICATION_DEST_TOKEN = "token";
+
     @Autowired
     UserService userService;
 
@@ -52,5 +54,14 @@ class UserServiceTests extends UserTestsAbstract {
         assertEquals(TEST_LATITUDE, possibleUser.get().getLocation().getLatitude());
         assertEquals(TEST_LONGITUDE, possibleUser.get().getLocation().getLongitude());
         assertNotEquals(testUser.getLastUpdateDate(), possibleUser.get().getLastUpdateDate());
+    }
+
+    @Test
+    void whenUpdateUserNotificationDestTokenThenItIsUpdated() {
+        userService.updateUserNotificationDestToken(testUser, TEST_NOTIFICATION_DEST_TOKEN);
+
+        Optional<User> possibleUser = userRepository.findByEmail(testUser.getEmail());
+        assertTrue(possibleUser.isPresent());
+        assertEquals(TEST_NOTIFICATION_DEST_TOKEN, possibleUser.get().getNotificationDestToken());
     }
 }

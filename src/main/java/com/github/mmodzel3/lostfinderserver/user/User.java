@@ -41,6 +41,8 @@ public class User implements UserDetails {
 
     private UserRole role;
 
+    private String notificationDestToken;
+
     private LocalDateTime lastUpdateDate;
 
     public User() {
