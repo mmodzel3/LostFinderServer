@@ -1,6 +1,7 @@
 package com.github.mmodzel3.lostfinderserver.chat;
 
 import com.github.mmodzel3.lostfinderserver.user.AuthenticatedUserTestsAbstract;
+import com.sun.jna.platform.win32.WinUser;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
@@ -13,19 +14,23 @@ class ChatTestsAbstract extends AuthenticatedUserTestsAbstract {
 
     protected ChatMessage testMessage;
 
-    void createTestMessage() {
-        LocalDateTime now = LocalDateTime.now();
-        createTestUser();
-
+    ChatMessage createTestMessage(String message, LocalDateTime sendDateTime) {
         testMessage = ChatMessage.builder()
                 .msg(MSG)
-                .sendDate(now)
-                .receivedDate(now)
-                .lastUpdateDate(now)
+                .sendDate(sendDateTime)
+                .receivedDate(sendDateTime)
+                .lastUpdateDate(sendDateTime)
                 .user(testUser)
                 .build();
 
         chatRepository.save(testMessage);
+
+        return testMessage;
+    }
+
+    ChatMessage createTestMessage() {
+        LocalDateTime now = LocalDateTime.now();
+        return createTestMessage(MSG, now);
     }
 
     void deleteTestMessage() {

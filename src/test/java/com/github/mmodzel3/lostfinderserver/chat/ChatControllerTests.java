@@ -27,6 +27,7 @@ class ChatControllerTests extends ChatTestsAbstract {
 
     @BeforeEach
     void setUp() {
+        createTestUser();
         createTestMessage();
     }
 
