@@ -7,7 +7,7 @@ import java.util.Map;
 
 @Getter
 @Builder
-class ServerNotification {
+public class ServerNotification {
     private String title;
     private String body;
     private Map<String, String> data;

@@ -1,17 +1,25 @@
 package com.github.mmodzel3.lostfinderserver.chat;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.github.mmodzel3.lostfinderserver.notification.NotificationService;
+import com.github.mmodzel3.lostfinderserver.notification.ServerNotification;
+import io.netty.util.internal.StringUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.ArgumentCaptor;
+import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 
 import java.time.LocalDateTime;
-import java.time.Period;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 class ChatServiceTests extends ChatTestsAbstract {
@@ -20,7 +28,11 @@ class ChatServiceTests extends ChatTestsAbstract {
     private final int FIRST_ELEMENT = 0;
     private final int ONE_MESSAGE = 1;
 
+    @MockBean
+    private NotificationService notificationService;
+
     @Autowired
+    @InjectMocks
     private ChatService chatService;
 
     @BeforeEach
@@ -45,7 +57,7 @@ class ChatServiceTests extends ChatTestsAbstract {
     }
 
     @Test
-    void whenSendMessageThenItIsSend() {
+    void whenSendMessageThenItIsAdded() {
         LocalDateTime now = LocalDateTime.now();
         ChatUserMessage userMessage = new ChatUserMessage(MSG, now);
         ChatMessage chatMessage = chatService.sendMessage(testUser, userMessage);
@@ -54,6 +66,26 @@ class ChatServiceTests extends ChatTestsAbstract {
         assertEquals(TWO_ELEMENT_SIZE, messages.size());
         assertEquals(MSG, chatMessage.getMsg());
         assertEquals(testUser.getId(), chatMessage.getUser().getId());
+    }
+
+    @Test
+    void whenSendMessageThenNotificationToUsersIsSendWithCorrectFormat() throws JsonProcessingException {
+        ArgumentCaptor<ServerNotification> argument = ArgumentCaptor.forClass(ServerNotification.class);
+        LocalDateTime now = LocalDateTime.now();
+        ChatUserMessage userMessage = new ChatUserMessage(MSG, now);
+        ChatMessage chatMessage = chatService.sendMessage(testUser, userMessage);
+
+        verify(notificationService).sendNotificationToAllUsers(argument.capture());
+
+        assertEquals(USER_NAME, argument.getValue().getTitle());
+        assertEquals(MSG, argument.getValue().getBody());
+
+        ObjectMapper objectMapper = new ObjectMapper();
+        String messageJson = argument.getValue().getData().get("message");
+        String expectedMessageJson = objectMapper.writeValueAsString(chatMessage);
+
+        assertNotEquals(StringUtil.EMPTY_STRING, messageJson);
+        assertEquals(expectedMessageJson, messageJson);
     }
 
     @Test

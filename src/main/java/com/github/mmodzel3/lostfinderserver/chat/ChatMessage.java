@@ -10,6 +10,8 @@ import java.time.LocalDateTime;
 @Getter
 @Setter
 @Builder
+@NoArgsConstructor
+@AllArgsConstructor
 class ChatMessage {
     @Id
     @Setter(AccessLevel.NONE)
