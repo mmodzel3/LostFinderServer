@@ -1,11 +1,10 @@
 package com.github.mmodzel3.lostfinderserver.chat;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.mmodzel3.lostfinderserver.notification.NotificationService;
-import com.github.mmodzel3.lostfinderserver.notification.ServerNotification;
+import com.github.mmodzel3.lostfinderserver.notification.PushNotification;
+import com.github.mmodzel3.lostfinderserver.notification.PushNotificationProcessingException;
+import com.github.mmodzel3.lostfinderserver.notification.PushNotificationService;
 import com.github.mmodzel3.lostfinderserver.user.User;
-import io.netty.util.internal.StringUtil;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -15,21 +14,22 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
+@Slf4j
 @Service
 class ChatService {
+    static final String CHAT_NOTIFICATION_TYPE = "chat";
+
     final private ChatRepository chatRepository;
-    final private NotificationService notificationService;
+    final private PushNotificationService pushNotificationService;
 
     @Value("${chat.messages_limit}")
     long messagesLimit;
 
-    ChatService(ChatRepository chatRepository, NotificationService notificationService) {
+    ChatService(ChatRepository chatRepository, PushNotificationService pushNotificationService) {
         this.chatRepository = chatRepository;
-        this.notificationService = notificationService;
+        this.pushNotificationService = pushNotificationService;
     }
 
     List<ChatMessage> getMessages(int page, int pageSize) {
@@ -52,7 +52,11 @@ class ChatService {
 
         chatRepository.save(chatMessage);
 
-        sendChatMessageNotificationToUsers(chatMessage);
+        try {
+            sendChatMessageNotificationToUsers(chatMessage);
+        } catch (PushNotificationProcessingException e) {
+            log.debug("Problem with sending chat message as notification to all users. " + e.getMessage());
+        }
 
         return chatMessage;
     }
@@ -73,25 +77,14 @@ class ChatService {
         messagesToRemove.forEach(chatRepository::delete);
     }
 
-    private void sendChatMessageNotificationToUsers(ChatMessage message) {
-        ObjectMapper objectMapper = new ObjectMapper();
-        String json;
-
-        try {
-            json = objectMapper.writeValueAsString(message);
-        } catch (JsonProcessingException e) {
-            json = StringUtil.EMPTY_STRING;
-        }
-
-        Map<String, String> data = new HashMap<String, String>();
-        data.put("message", json);
-
-        ServerNotification notification = ServerNotification.builder()
+    private void sendChatMessageNotificationToUsers(ChatMessage message) throws PushNotificationProcessingException {
+        PushNotification notification = PushNotification.builder()
                 .title(message.getUser().getUsername())
                 .body(message.getMsg())
-                .data(data)
+                .type(CHAT_NOTIFICATION_TYPE)
+                .data(message)
                 .build();
 
-        notificationService.sendNotificationToAllUsers(notification);
+        pushNotificationService.sendNotificationToAllUsers(notification);
     }
 }

@@ -14,7 +14,7 @@ import java.io.IOException;
 
 @Getter
 @Configuration
-class NotificationConfig {
+class PushNotificationConfig {
     @Value("${notification.firebase.config.file}")
     private String firebaseConfigPath;
 

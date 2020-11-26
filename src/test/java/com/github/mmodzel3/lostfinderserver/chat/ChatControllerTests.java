@@ -1,10 +1,9 @@
 package com.github.mmodzel3.lostfinderserver.chat;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.github.mmodzel3.lostfinderserver.notification.NotificationService;
-import com.github.mmodzel3.lostfinderserver.notification.ServerNotification;
-import io.netty.util.internal.StringUtil;
+import com.github.mmodzel3.lostfinderserver.notification.PushNotification;
+import com.github.mmodzel3.lostfinderserver.notification.PushNotificationProcessingException;
+import com.github.mmodzel3.lostfinderserver.notification.PushNotificationService;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -20,7 +19,7 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
@@ -33,7 +32,7 @@ class ChatControllerTests extends ChatTestsAbstract {
     int port;
 
     @MockBean
-    private NotificationService notificationService;
+    private PushNotificationService pushNotificationService;
 
     @Autowired
     @InjectMocks
@@ -92,8 +91,8 @@ class ChatControllerTests extends ChatTestsAbstract {
     }
 
     @Test
-    void whenSendMessageThenNotificationIsSendToAllUsers() throws JsonProcessingException {
-        ArgumentCaptor<ServerNotification> argument = ArgumentCaptor.forClass(ServerNotification.class);
+    void whenSendMessageThenNotificationIsSendToAllUsers() throws JsonProcessingException, PushNotificationProcessingException {
+        ArgumentCaptor<PushNotification> argument = ArgumentCaptor.forClass(PushNotification.class);
         LocalDateTime now = LocalDateTime.now();
         ChatUserMessage userMessage = new ChatUserMessage(MSG, now);
 
@@ -108,16 +107,13 @@ class ChatControllerTests extends ChatTestsAbstract {
                 .extract()
                 .as(ChatMessage.class);
 
-        verify(notificationService).sendNotificationToAllUsers(argument.capture());
+        verify(pushNotificationService).sendNotificationToAllUsers(argument.capture());
+
+        ChatMessage notificationChatMessage = (ChatMessage) argument.getValue().getData();
 
         assertEquals(USER_NAME, argument.getValue().getTitle());
         assertEquals(MSG, argument.getValue().getBody());
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        String messageJson = argument.getValue().getData().get("message");
-        String expectedMessageJson = objectMapper.writeValueAsString(message);
-
-        assertNotEquals(StringUtil.EMPTY_STRING, messageJson);
-        assertEquals(expectedMessageJson, messageJson);
+        assertEquals(ChatService.CHAT_NOTIFICATION_TYPE, argument.getValue().getType());
+        assertEquals(MSG, notificationChatMessage.getMsg());
     }
 }

@@ -7,8 +7,9 @@ import java.util.Map;
 
 @Getter
 @Builder
-public class ServerNotification {
+public class PushNotification {
     private String title;
     private String body;
-    private Map<String, String> data;
+    private String type;
+    private Object data;
 }
