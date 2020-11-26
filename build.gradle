@@ -36,6 +36,7 @@ dependencies {
     testImplementation 'org.springframework.security:spring-security-test'
     testCompile 'de.flapdoodle.embed:de.flapdoodle.embed.mongo'
     testCompile 'io.rest-assured:rest-assured'
+    testCompile 'io.rest-assured:spring-mock-mvc'
 }
 
 test {
