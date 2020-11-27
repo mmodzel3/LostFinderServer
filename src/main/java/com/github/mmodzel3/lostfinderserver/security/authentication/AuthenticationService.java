@@ -1,7 +1,7 @@
 package com.github.mmodzel3.lostfinderserver.security.authentication;
 
 import com.github.mmodzel3.lostfinderserver.user.User;
-import com.github.mmodzel3.lostfinderserver.user.UserRepository;
+import com.github.mmodzel3.lostfinderserver.user.UserService;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
@@ -9,13 +9,13 @@ import java.util.Optional;
 @Service
 class AuthenticationService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
 
-    public AuthenticationService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public AuthenticationService(UserService userService) {
+        this.userService = userService;
     }
 
     public Optional<User> findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userService.findUserByEmail(email);
     }
 }

@@ -1,7 +1,7 @@
 package com.github.mmodzel3.lostfinderserver.security.authentication.register;
 
 import com.github.mmodzel3.lostfinderserver.user.User;
-import com.github.mmodzel3.lostfinderserver.user.UserRepository;
+import com.github.mmodzel3.lostfinderserver.user.UserService;
 import com.github.mmodzel3.lostfinderserver.user.UserTestsAbstract;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -22,7 +22,7 @@ class RegisterControllerTests extends UserTestsAbstract {
     int port;
 
     @Autowired
-    UserRepository userRepository;
+    UserService userService;
 
     @Autowired
     PasswordEncoder passwordEncoder;
@@ -42,7 +42,7 @@ class RegisterControllerTests extends UserTestsAbstract {
                 .then()
                 .statusCode(200);
 
-        Optional<User> possibleRegisteredUser = userRepository.findByEmail(USER_EMAIL);
+        Optional<User> possibleRegisteredUser = userService.findUserByEmail(USER_EMAIL);
         assertTrue(possibleRegisteredUser.isPresent());
         assertTrue(passwordEncoder.matches(USER_PASSWORD, possibleRegisteredUser.get().getPassword()));
         assertEquals(USER_NAME, possibleRegisteredUser.get().getUsername());

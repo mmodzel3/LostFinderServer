@@ -1,7 +1,7 @@
 package com.github.mmodzel3.lostfinderserver.security.authentication.register;
 
 import com.github.mmodzel3.lostfinderserver.user.User;
-import com.github.mmodzel3.lostfinderserver.user.UserRepository;
+import com.github.mmodzel3.lostfinderserver.user.UserService;
 import com.github.mmodzel3.lostfinderserver.user.UserTestsAbstract;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
@@ -19,7 +19,7 @@ class RegisterServiceTests extends UserTestsAbstract {
     RegisterService registerService;
 
     @Autowired
-    UserRepository userRepository;
+    UserService userService;
 
     @AfterEach
     void tearDown() {
@@ -30,7 +30,7 @@ class RegisterServiceTests extends UserTestsAbstract {
     void whenRegisterUserThenUserIsRegistered() throws AccountExistsException {
         registerService.register(USER_EMAIL, USER_PASSWORD, USER_NAME, USER_ROLE);
 
-        Optional<User> possibleUser = userRepository.findByEmail(USER_EMAIL);
+        Optional<User> possibleUser = userService.findUserByEmail(USER_EMAIL);
 
         assertTrue(possibleUser.isPresent());
         assertEquals(USER_NAME, possibleUser.get().getUsername());

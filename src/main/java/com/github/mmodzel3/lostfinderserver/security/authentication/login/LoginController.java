@@ -14,7 +14,9 @@ class LoginController {
 
     @PostMapping
     @ResponseBody
-    LoginInfo login(@RequestParam String email, @RequestParam String password) {
-        return loginService.login(email, password);
+    LoginInfo login(@RequestParam String email,
+                    @RequestParam String password,
+                    @RequestParam(required = false) String pushNotificationDestToken) {
+        return loginService.login(email, password, pushNotificationDestToken);
     }
 }
