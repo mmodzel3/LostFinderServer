@@ -1,8 +1,8 @@
 package com.github.mmodzel3.lostfinderserver.security.authentication.register;
 
 import com.github.mmodzel3.lostfinderserver.user.User;
-import com.github.mmodzel3.lostfinderserver.user.UserRepository;
 import com.github.mmodzel3.lostfinderserver.user.UserRole;
+import com.github.mmodzel3.lostfinderserver.user.UserService;
 import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -10,11 +10,11 @@ import org.springframework.stereotype.Service;
 @Service
 public class RegisterService {
 
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    RegisterService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.userRepository = userRepository;
+    RegisterService(UserService userService, PasswordEncoder passwordEncoder) {
+        this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
 
@@ -23,7 +23,7 @@ public class RegisterService {
         User user = new User(email, encodedPassword, username, role);
 
         try {
-            userRepository.save(user);
+            userService.addUser(user);
         } catch (DuplicateKeyException e) {
             throw new AccountExistsException();
         }
