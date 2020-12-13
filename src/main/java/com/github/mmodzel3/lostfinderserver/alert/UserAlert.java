@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 class UserAlert {
-    private String type;
+    private AlertType type;
 
     private Location location;
 
@@ -29,12 +29,6 @@ class UserAlert {
 
     private String description;
 
-    @Getter(AccessLevel.NONE)
-    private Boolean showNotificationAtStart;
-
-    @Getter(AccessLevel.NONE)
-    private Boolean showNotificationAtEnd;
-
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
     @JsonSerialize(using = LocalDateTimeSerializer.class)
@@ -42,10 +36,10 @@ class UserAlert {
     private LocalDateTime sendDate;
 
     public Boolean showNotificationAtStart() {
-        return showNotificationAtStart;
+        return type.showNotificationAtStart();
     }
 
     public Boolean showNotificationAtEnd() {
-        return showNotificationAtEnd;
+        return type.showNotificationAtEnd();
     }
 }

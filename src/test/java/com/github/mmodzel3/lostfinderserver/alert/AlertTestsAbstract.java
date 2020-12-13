@@ -7,9 +7,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import java.time.LocalDateTime;
 
 public class AlertTestsAbstract extends AuthenticatedUserTestsAbstract {
-    protected static String TEST_ALERT_TITLE = "title";
     protected static String TEST_ALERT_DESCRIPTION = "description";
-    protected static String TEST_ALERT_TYPE = "type";
+    protected static AlertType TEST_ALERT_TYPE = AlertType.HELP;
 
     @Autowired
     protected AlertRepository alertRepository;
@@ -39,12 +38,9 @@ public class AlertTestsAbstract extends AuthenticatedUserTestsAbstract {
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
 
         return Alert.builder()
-                .title(TEST_ALERT_TITLE)
                 .description(TEST_ALERT_DESCRIPTION)
-                .type(TEST_ALERT_TYPE)
                 .user(user)
-                .showNotificationAtStart(false)
-                .showNotificationAtEnd(true)
+                .type(TEST_ALERT_TYPE)
                 .sendDate(yesterday)
                 .receivedDate(yesterday)
                 .lastUpdateDate(yesterday)
@@ -55,11 +51,8 @@ public class AlertTestsAbstract extends AuthenticatedUserTestsAbstract {
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
 
         return UserAlert.builder()
-                .title(TEST_ALERT_TITLE)
                 .description(TEST_ALERT_DESCRIPTION)
                 .type(TEST_ALERT_TYPE)
-                .showNotificationAtStart(false)
-                .showNotificationAtEnd(true)
                 .sendDate(yesterday)
                 .build();
     }

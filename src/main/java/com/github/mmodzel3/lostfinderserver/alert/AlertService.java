@@ -33,10 +33,7 @@ class AlertService {
                 .user(user)
                 .type(userAlert.getType())
                 .location(userAlert.getLocation())
-                .title(userAlert.getTitle())
                 .description(userAlert.getDescription())
-                .showNotificationAtStart(userAlert.showNotificationAtStart())
-                .showNotificationAtEnd(userAlert.showNotificationAtEnd())
                 .sendDate(userAlert.getSendDate())
                 .receivedDate(receivedDate)
                 .lastUpdateDate(receivedDate)
@@ -70,7 +67,7 @@ class AlertService {
 
     private void notifyUsersWithAlert(Alert alert) throws PushNotificationProcessingException {
         PushNotification notification = PushNotification.builder()
-                .title(alert.getTitle())
+                .title(alert.getType().toString())
                 .body(alert.getDescription())
                 .type(ALERT_NOTIFICATION_TYPE)
                 .data(alert)

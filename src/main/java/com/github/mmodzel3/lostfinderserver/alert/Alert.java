@@ -24,24 +24,16 @@ class Alert {
     @Setter(AccessLevel.NONE)
     private String id;
 
-    private String type;
-
     @DBRef
     private User user;
+
+    private AlertType type;
 
     private Location location;
 
     private Double range;
 
-    private String title;
-
     private String description;
-
-    @Getter(AccessLevel.NONE)
-    private Boolean showNotificationAtStart;
-
-    @Getter(AccessLevel.NONE)
-    private Boolean showNotificationAtEnd;
 
     @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME)
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSS")
@@ -68,10 +60,10 @@ class Alert {
     private LocalDateTime lastUpdateDate;
 
     public Boolean showNotificationAtStart() {
-        return showNotificationAtStart;
+        return type.showNotificationAtStart();
     }
 
     public Boolean showNotificationAtEnd() {
-        return showNotificationAtEnd;
+        return type.showNotificationAtEnd();
     }
 }
