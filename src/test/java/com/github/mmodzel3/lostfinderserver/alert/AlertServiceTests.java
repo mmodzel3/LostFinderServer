@@ -66,6 +66,8 @@ class AlertServiceTests extends AlertTestsAbstract {
 
     @Test
     void whenAddAlertWithWrongRoleThenAlertAddPermissionException() {
+        changeTestUserRole(UserRole.USER);
+        
         UserAlert userAlert = buildTestUserAlert(AlertType.GATHER);
 
         assertThrows(AlertAddPermissionException.class, () -> alertService.addAlert(testUser, userAlert));

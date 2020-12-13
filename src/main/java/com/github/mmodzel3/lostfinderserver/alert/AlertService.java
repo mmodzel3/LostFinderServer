@@ -27,7 +27,7 @@ class AlertService {
     }
 
     Alert addAlert(User user, UserAlert userAlert) throws PushNotificationProcessingException, AlertAddPermissionException {
-        if (userAlert.getType().checkCreatePermission(user.getRole())) {
+        if (!userAlert.getType().checkCreatePermission(user.getRole())) {
             throw new AlertAddPermissionException();
         }
 

@@ -3,6 +3,7 @@ package com.github.mmodzel3.lostfinderserver.security.authentication.login;
 import com.github.mmodzel3.lostfinderserver.security.authentication.token.TokenDetails;
 import com.github.mmodzel3.lostfinderserver.security.authentication.token.TokenProvider;
 import com.github.mmodzel3.lostfinderserver.user.User;
+import com.github.mmodzel3.lostfinderserver.user.UserRole;
 import com.github.mmodzel3.lostfinderserver.user.UserService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -26,11 +27,13 @@ public class LoginService {
     public LoginInfo login(String email, String password) {
         Optional<User> possibleUser = userService.findUserByEmail(email);
 
-        String token = possibleUser.filter((u) -> passwordEncoder.matches(password, u.getPassword()))
-                .map(u -> tokenProvider.generateToken(new TokenDetails(u.getEmail())))
-                .orElse(StringUtils.EMPTY);
+        return possibleUser.filter((u) -> passwordEncoder.matches(password, u.getPassword()))
+                .map(u -> {
+                    String token = tokenProvider.generateToken(new TokenDetails(u.getEmail()));
+                    UserRole role = u.getRole();
 
-        return new LoginInfo(token);
+                    return new LoginInfo(token, role);
+                }).orElse(new LoginInfo(StringUtils.EMPTY, UserRole.NOT_LOGGED));
     }
 
     public LoginInfo login(String email, String password, String notificationDestToken) {

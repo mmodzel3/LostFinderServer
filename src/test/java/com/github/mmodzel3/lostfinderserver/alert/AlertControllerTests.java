@@ -87,6 +87,8 @@ class AlertControllerTests extends AlertTestsAbstract {
 
     @Test
     void whenEndAlertWithWrongRoleThenAlertAddPermissionException() {
+        changeTestUserRole(UserRole.USER);
+
         UserAlert userAlert = buildTestUserAlert(AlertType.GATHER);
 
         given().port(port)
