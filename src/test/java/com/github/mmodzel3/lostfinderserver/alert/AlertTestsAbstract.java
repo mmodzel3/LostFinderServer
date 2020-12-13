@@ -47,13 +47,17 @@ public class AlertTestsAbstract extends AuthenticatedUserTestsAbstract {
                 .build();
     }
 
-    UserAlert buildTestUserAlert() {
+    UserAlert buildTestUserAlert(AlertType alertType) {
         LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
 
         return UserAlert.builder()
                 .description(TEST_ALERT_DESCRIPTION)
-                .type(TEST_ALERT_TYPE)
+                .type(alertType)
                 .sendDate(yesterday)
                 .build();
+    }
+
+    UserAlert buildTestUserAlert() {
+        return buildTestUserAlert(TEST_ALERT_TYPE);
     }
 }

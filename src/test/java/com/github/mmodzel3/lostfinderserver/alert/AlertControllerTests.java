@@ -86,6 +86,20 @@ class AlertControllerTests extends AlertTestsAbstract {
     }
 
     @Test
+    void whenEndAlertWithWrongRoleThenAlertAddPermissionException() {
+        UserAlert userAlert = buildTestUserAlert(AlertType.GATHER);
+
+        given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Content-Type","application/json")
+                .header("Accept","application/json")
+                .body(userAlert)
+                .post("/api/alerts/add")
+                .then()
+                .statusCode(500);
+    }
+
+    @Test
     void whenEndAlertThenItStatusIsChanged() {
         given().port(port)
                 .header(AUTHROIZATION, authorizationHeader)

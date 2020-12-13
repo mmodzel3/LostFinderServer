@@ -23,7 +23,7 @@ class AlertController {
 
     @PostMapping("/api/alerts/add")
     Alert addAlert(@AuthenticationPrincipal Authentication authentication,
-                   @RequestBody UserAlert userAlert) throws PushNotificationProcessingException {
+                   @RequestBody UserAlert userAlert) throws PushNotificationProcessingException, AlertAddPermissionException {
         User user = (User) authentication.getPrincipal();
 
         return alertService.addAlert(user, userAlert);

@@ -26,7 +26,11 @@ class AlertService {
         return alertRepository.findAllByEndDateNull();
     }
 
-    Alert addAlert(User user, UserAlert userAlert) throws PushNotificationProcessingException {
+    Alert addAlert(User user, UserAlert userAlert) throws PushNotificationProcessingException, AlertAddPermissionException {
+        if (userAlert.getType().checkCreatePermission(user.getRole())) {
+            throw new AlertAddPermissionException();
+        }
+
         LocalDateTime receivedDate = LocalDateTime.now();
 
         Alert alert = Alert.builder()

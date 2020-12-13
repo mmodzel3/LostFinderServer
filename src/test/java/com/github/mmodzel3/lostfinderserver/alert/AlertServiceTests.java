@@ -55,13 +55,20 @@ class AlertServiceTests extends AlertTestsAbstract {
     }
 
     @Test
-    void whenAddAlertThenItIsAdded() throws PushNotificationProcessingException {
+    void whenAddAlertThenItIsAdded() throws PushNotificationProcessingException, AlertAddPermissionException {
         UserAlert userAlert = buildTestUserAlert();
 
         alertService.addAlert(testUser, userAlert);
 
         List<Alert> alertList = alertRepository.findAll();
         assertEquals(TWO_ELEMENT_LIST_SIZE, alertList.size());
+    }
+
+    @Test
+    void whenAddAlertWithWrongRoleThenAlertAddPermissionException() {
+        UserAlert userAlert = buildTestUserAlert(AlertType.GATHER);
+
+        assertThrows(AlertAddPermissionException.class, () -> alertService.addAlert(testUser, userAlert));
     }
 
     @Test
