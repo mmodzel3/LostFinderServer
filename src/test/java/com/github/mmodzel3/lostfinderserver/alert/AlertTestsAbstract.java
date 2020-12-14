@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 public class AlertTestsAbstract extends AuthenticatedUserTestsAbstract {
     protected static String TEST_ALERT_DESCRIPTION = "description";
     protected static AlertType TEST_ALERT_TYPE = AlertType.HELP;
+    protected static Double TEST_ALERT_RANGE = 120.0;
 
     @Autowired
     protected AlertRepository alertRepository;
@@ -54,6 +55,7 @@ public class AlertTestsAbstract extends AuthenticatedUserTestsAbstract {
                 .description(TEST_ALERT_DESCRIPTION)
                 .type(alertType)
                 .sendDate(yesterday)
+                .range(TEST_ALERT_RANGE)
                 .build();
     }
 

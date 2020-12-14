@@ -1,5 +1,6 @@
 package com.github.mmodzel3.lostfinderserver.alert;
 
+import com.github.mmodzel3.lostfinderserver.notification.PushNotificationProcessingException;
 import com.github.mmodzel3.lostfinderserver.notification.PushNotificationService;
 import com.github.mmodzel3.lostfinderserver.user.User;
 import com.github.mmodzel3.lostfinderserver.user.UserRole;
@@ -12,6 +13,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.boot.web.server.LocalServerPort;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 import static io.restassured.RestAssured.given;
@@ -169,5 +171,24 @@ class AlertControllerTests extends AlertTestsAbstract {
                 .as(Alert.class);
 
         assertNotNull(alert.getEndDate());
+    }
+
+    @Test
+    void whenEndAlertThatWasEndedThenItIsNotUpdated() {
+        LocalDateTime dateTime = LocalDateTime.now().minusMonths(1);
+
+        testAlert.setEndDate(dateTime);
+        alertRepository.save(testAlert);
+
+        Alert alert = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .param("alertId", testAlert.getId())
+                .put("/api/alerts/end")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(Alert.class);
+
+        assertEquals(dateTime.getMonth(), alert.getEndDate().getMonth());
     }
 }

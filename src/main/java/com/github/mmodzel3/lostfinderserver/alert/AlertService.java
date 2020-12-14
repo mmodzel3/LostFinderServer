@@ -37,6 +37,7 @@ class AlertService {
                 .user(user)
                 .type(userAlert.getType())
                 .location(userAlert.getLocation())
+                .range(userAlert.getRange())
                 .description(userAlert.getDescription())
                 .sendDate(userAlert.getSendDate())
                 .receivedDate(receivedDate)
@@ -54,11 +55,15 @@ class AlertService {
         Optional<Alert> possibleAlert = alertRepository.findById(alertId);
 
         Alert alert = possibleAlert.orElseThrow(AlertDoesNotExistsException::new);
+        if (alert.getEndDate() != null) {
+            return alert;
+        }
 
         if (user.getId().equals(alert.getUser().getId()) || user.isManager()) {
             LocalDateTime endDate = LocalDateTime.now();
 
             alert.setEndDate(endDate);
+            alert.setLastUpdateDate(endDate);
 
             alertRepository.save(alert);
             notifyUsersWithAlert(alert);

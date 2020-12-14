@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.mock.mockito.MockBean;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -67,7 +68,7 @@ class AlertServiceTests extends AlertTestsAbstract {
     @Test
     void whenAddAlertWithWrongRoleThenAlertAddPermissionException() {
         changeTestUserRole(UserRole.USER);
-        
+
         UserAlert userAlert = buildTestUserAlert(AlertType.GATHER);
 
         assertThrows(AlertAddPermissionException.class, () -> alertService.addAlert(testUser, userAlert));
@@ -109,5 +110,16 @@ class AlertServiceTests extends AlertTestsAbstract {
 
         Alert alert = alertService.endAlert(user, testAlert.getId());
         assertNotNull(alert.getEndDate());
+    }
+
+    @Test
+    void whenEndAlertThatWasEndedThenItIsNotUpdated() throws PushNotificationProcessingException, AlertUpdatePermissionException, AlertDoesNotExistsException {
+        LocalDateTime dateTime = LocalDateTime.now().minusMonths(1);
+
+        testAlert.setEndDate(dateTime);
+        alertRepository.save(testAlert);
+
+        Alert alert = alertService.endAlert(testUser, testAlert.getId());
+        assertEquals(dateTime.getMonth(), alert.getEndDate().getMonth());
     }
 }
