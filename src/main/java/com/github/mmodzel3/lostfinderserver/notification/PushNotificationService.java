@@ -45,13 +45,7 @@ class PushNotificationService {
             throws PushNotificationProcessingException {
         String jsonData = parseNotificationDataToJson(notification);
 
-        Notification messagingNotification = Notification.builder()
-                .setTitle(notification.getTitle())
-                .setBody(notification.getBody())
-                .build();
-
         return Message.builder()
-                .setNotification(messagingNotification)
                 .putData(NOTIFICATION_DATA_TYPE_FIELD, notification.getType())
                 .putData(NOTIFICATION_DATA_FIELD, jsonData);
     }

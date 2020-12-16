@@ -76,8 +76,6 @@ class AlertService {
 
     private void notifyUsersWithAlert(Alert alert) throws PushNotificationProcessingException {
         PushNotification notification = PushNotification.builder()
-                .title(alert.getType().toString())
-                .body(alert.getDescription())
                 .type(ALERT_NOTIFICATION_TYPE)
                 .data(alert)
                 .build();

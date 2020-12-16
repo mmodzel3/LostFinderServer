@@ -111,8 +111,6 @@ class ChatControllerTests extends ChatTestsAbstract {
 
         ChatMessage notificationChatMessage = (ChatMessage) argument.getValue().getData();
 
-        assertEquals(USER_NAME, argument.getValue().getTitle());
-        assertEquals(MSG, argument.getValue().getBody());
         assertEquals(ChatService.CHAT_NOTIFICATION_TYPE, argument.getValue().getType());
         assertEquals(MSG, notificationChatMessage.getMsg());
     }
