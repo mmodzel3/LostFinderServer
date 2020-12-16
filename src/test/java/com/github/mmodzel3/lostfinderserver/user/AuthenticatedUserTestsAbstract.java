@@ -22,7 +22,7 @@ public abstract class AuthenticatedUserTestsAbstract extends UserTestsAbstract {
     }
 
     private void loginTestUser() {
-        token = loginService.login(USER_EMAIL, USER_PASSWORD).token;
+        token = loginService.login(USER_EMAIL, USER_PASSWORD).getToken();
         authorizationHeader = BEARER + " " + token;
     }
 }

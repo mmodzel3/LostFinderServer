@@ -27,12 +27,18 @@ public abstract class UserTestsAbstract {
     protected User testUser;
 
     protected void createTestUser() {
-        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
-        String encodedPassword = passwordEncoder.encode(USER_PASSWORD);
-        testUser = new User(USER_EMAIL, encodedPassword, USER_NAME, USER_ROLE);
-        testUser.setLastUpdateDate(yesterday);
+        testUser = buildTestUser(USER_EMAIL, USER_PASSWORD, USER_NAME, USER_ROLE);
+    }
 
-        userRepository.save(testUser);
+    protected User buildTestUser(String email, String password, String username, UserRole role) {
+        LocalDateTime yesterday = LocalDateTime.now().minusDays(1);
+        String encodedPassword = passwordEncoder.encode(password);
+        User user = new User(email, encodedPassword, username, role);
+        user.setLastUpdateDate(yesterday);
+
+        userRepository.save(user);
+
+        return user;
     }
 
     protected void deleteTestUser() {
@@ -42,5 +48,11 @@ public abstract class UserTestsAbstract {
 
     protected void deleteAllUsers() {
         userRepository.deleteAll();
+    }
+
+    protected void changeTestUserRole(UserRole role) {
+        testUser.setRole(role);
+
+        userRepository.save(testUser);
     }
 }

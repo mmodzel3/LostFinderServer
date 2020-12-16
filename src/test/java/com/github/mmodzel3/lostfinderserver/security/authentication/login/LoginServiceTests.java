@@ -1,6 +1,7 @@
 package com.github.mmodzel3.lostfinderserver.security.authentication.login;
 
 import com.github.mmodzel3.lostfinderserver.user.User;
+import com.github.mmodzel3.lostfinderserver.user.UserRole;
 import com.github.mmodzel3.lostfinderserver.user.UserService;
 import com.github.mmodzel3.lostfinderserver.user.UserTestsAbstract;
 import org.apache.commons.lang3.StringUtils;
@@ -38,24 +39,27 @@ class LoginServiceTests extends UserTestsAbstract {
     }
 
     @Test
-    void whenLoginToExistingUserThenGotLoginInfoWithToken() {
+    void whenLoginToExistingUserThenGotLoginInfoWithTokenAndUserRole() {
         LoginInfo loginInfo = loginService.login(USER_EMAIL, USER_PASSWORD);
 
         assertNotEquals(StringUtils.EMPTY, loginInfo.getToken());
+        assertEquals(testUser.getRole(), loginInfo.getRole());
     }
 
     @Test
-    void whenLoginToNotExistingUserThenGotLoginInfoWithNoToken() {
+    void whenLoginToNotExistingUserThenGotLoginInfoWithNoTokenAndRoleNotLogged() {
         LoginInfo loginInfo = loginService.login(FAKE_USER_EMAIL, FAKE_USER_PASSWORD);
 
         assertEquals(StringUtils.EMPTY, loginInfo.getToken());
+        assertEquals(UserRole.NOT_LOGGED, loginInfo.getRole());
     }
 
     @Test
-    void whenLoginWithWrongPasswordToUserThenGotLoginInfoWithNoToken() {
+    void whenLoginWithWrongPasswordToUserThenGotLoginInfoWithNoTokenAndRoleNotLogged() {
         LoginInfo loginInfo = loginService.login(USER_EMAIL, FAKE_USER_PASSWORD);
 
         assertEquals(StringUtils.EMPTY, loginInfo.getToken());
+        assertEquals(UserRole.NOT_LOGGED, loginInfo.getRole());
     }
 
     @Test

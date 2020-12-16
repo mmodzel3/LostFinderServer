@@ -1,6 +1,7 @@
 package com.github.mmodzel3.lostfinderserver.security.authentication.login;
 
 import com.github.mmodzel3.lostfinderserver.user.User;
+import com.github.mmodzel3.lostfinderserver.user.UserRole;
 import com.github.mmodzel3.lostfinderserver.user.UserService;
 import com.github.mmodzel3.lostfinderserver.user.UserTestsAbstract;
 import org.apache.commons.lang3.StringUtils;
@@ -41,7 +42,7 @@ class LoginControllerTests extends UserTestsAbstract {
     }
 
     @Test
-    void whenLoginToExistingUserThenGotToken() {
+    void whenLoginToExistingUserThenGotTokenAndUserRole() {
         LoginInfo loginInfo = given().port(port)
                 .param("email", USER_EMAIL)
                 .param("password", USER_PASSWORD)
@@ -52,10 +53,11 @@ class LoginControllerTests extends UserTestsAbstract {
                 .as(LoginInfo.class);
 
         assertNotEquals(StringUtils.EMPTY, loginInfo.getToken());
+        assertEquals(testUser.getRole(), loginInfo.getRole());
     }
 
     @Test
-    void whenLoginToNonExistingUserThenGotNoToken() {
+    void whenLoginToNonExistingUserThenGotNoTokenAndRoleNotLogged() {
         LoginInfo loginInfo = given().port(port)
                 .param("email", FAKE_USER_EMAIL)
                 .param("password", FAKE_USER_PASSWORD)
@@ -66,10 +68,11 @@ class LoginControllerTests extends UserTestsAbstract {
                 .as(LoginInfo.class);
 
         assertEquals(StringUtils.EMPTY, loginInfo.getToken());
+        assertEquals(UserRole.NOT_LOGGED, loginInfo.getRole());
     }
 
     @Test
-    void whenLoginWithWrongPasswordThenGotLoginInfoWithNoToken() {
+    void whenLoginWithWrongPasswordThenGotLoginInfoWithNoTokenAndRoleNotLogged() {
         LoginInfo loginInfo = given().port(port)
                 .param("email", USER_EMAIL)
                 .param("password", FAKE_USER_PASSWORD)
@@ -80,6 +83,7 @@ class LoginControllerTests extends UserTestsAbstract {
                 .as(LoginInfo.class);
 
         assertEquals(StringUtils.EMPTY, loginInfo.getToken());
+        assertEquals(UserRole.NOT_LOGGED, loginInfo.getRole());
     }
 
     @Test

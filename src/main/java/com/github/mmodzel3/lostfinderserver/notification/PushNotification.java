@@ -8,8 +8,6 @@ import java.util.Map;
 @Getter
 @Builder
 public class PushNotification {
-    private String title;
-    private String body;
     private String type;
     private Object data;
 }

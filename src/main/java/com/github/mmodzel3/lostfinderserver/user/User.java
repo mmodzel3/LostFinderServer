@@ -98,4 +98,14 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+    @JsonIgnore
+    public boolean isManager() {
+        return role.equals(UserRole.MANAGER) || role.equals(UserRole.OWNER);
+    }
+
+    @JsonIgnore
+    public boolean isOwner() {
+        return role.equals(UserRole.OWNER);
+    }
 }

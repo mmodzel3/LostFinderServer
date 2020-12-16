@@ -79,8 +79,6 @@ class ChatService {
 
     private void sendChatMessageNotificationToUsers(ChatMessage message) throws PushNotificationProcessingException {
         PushNotification notification = PushNotification.builder()
-                .title(message.getUser().getUsername())
-                .body(message.getMsg())
                 .type(CHAT_NOTIFICATION_TYPE)
                 .data(message)
                 .build();

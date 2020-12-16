@@ -75,8 +75,6 @@ class ChatServiceTests extends ChatTestsAbstract {
 
         verify(pushNotificationService).sendNotificationToAllUsers(argument.capture());
 
-        assertEquals(USER_NAME, argument.getValue().getTitle());
-        assertEquals(MSG, argument.getValue().getBody());
         assertEquals(ChatService.CHAT_NOTIFICATION_TYPE, argument.getValue().getType());
         assertSame(chatMessage, argument.getValue().getData());
     }
