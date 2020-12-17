@@ -41,6 +41,7 @@ public class User implements UserDetails {
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String password;
 
+    @Indexed(unique = true)
     private String username;
 
     private Location location;

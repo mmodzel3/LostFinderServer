@@ -1,5 +1,6 @@
 package com.github.mmodzel3.lostfinderserver.security.authentication.register;
 
+import com.github.mmodzel3.lostfinderserver.server.ServerResponse;
 import com.github.mmodzel3.lostfinderserver.user.User;
 import com.github.mmodzel3.lostfinderserver.user.UserService;
 import com.github.mmodzel3.lostfinderserver.user.UserTestsAbstract;
@@ -17,6 +18,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RegisterControllerTests extends UserTestsAbstract {
+    private static final String USER_EMAIL2 = "test2@test.com";
+    private static final String USER_NAME2 = "Test2";
 
     @LocalServerPort
     int port;
@@ -49,15 +52,36 @@ class RegisterControllerTests extends UserTestsAbstract {
     }
 
     @Test
-    void whenRegisterDuplicatedUserThenItIsNotRegistered() {
+    void whenRegisterDuplicatedUserWithSameEmailThenItIsNotRegistered() {
         createTestUser();
 
-        given().port(port)
+        ServerResponse response = given().port(port)
                 .param("email", USER_EMAIL)
+                .param("password", USER_PASSWORD)
+                .param("username", USER_NAME2)
+                .post("register")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.DUPLICATED, response);
+    }
+
+    @Test
+    void whenRegisterDuplicatedUserWithSameUsernameThenItIsNotRegistered() {
+        createTestUser();
+
+        ServerResponse response = given().port(port)
+                .param("email", USER_EMAIL2)
                 .param("password", USER_PASSWORD)
                 .param("username", USER_NAME)
                 .post("register")
                 .then()
-                .statusCode(500);
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.DUPLICATED, response);
     }
 }

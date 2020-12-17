@@ -4,11 +4,8 @@ import com.github.mmodzel3.lostfinderserver.location.Location;
 import com.github.mmodzel3.lostfinderserver.server.ServerResponse;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
 
 import static com.github.mmodzel3.lostfinderserver.server.ServerResponse.OK;
@@ -38,7 +35,7 @@ public class UserController {
 
     @PostMapping("/api/user/notification/token")
     private ServerResponse updateUserNotificationDestToken(@AuthenticationPrincipal Authentication authentication,
-                                              @RequestParam String token) {
+                                                           @RequestParam String token) {
         User user = (User) authentication.getPrincipal();
         userService.updateUserNotificationDestToken(user, token);
 

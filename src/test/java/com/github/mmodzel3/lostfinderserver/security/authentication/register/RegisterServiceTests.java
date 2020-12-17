@@ -14,6 +14,8 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class RegisterServiceTests extends UserTestsAbstract {
+    private static final String USER_EMAIL2 = "test2@test.com";
+    private static final String USER_NAME2 = "Test2";
 
     @Autowired
     RegisterService registerService;
@@ -38,10 +40,18 @@ class RegisterServiceTests extends UserTestsAbstract {
     }
 
     @Test
-    void whenRegisterDuplicatedUserThenUserIsNotRegistered() {
+    void whenRegisterDuplicatedUserWithSameEmailThenUserIsNotRegistered() {
         createTestUser();
 
         assertThrows(AccountExistsException.class, () ->
-                registerService.register(USER_EMAIL, USER_PASSWORD, USER_NAME, USER_ROLE));
+                registerService.register(USER_EMAIL, USER_PASSWORD, USER_NAME2, USER_ROLE));
+    }
+
+    @Test
+    void whenRegisterDuplicatedUserWithSameUsernameThenUserIsNotRegistered() {
+        createTestUser();
+
+        assertThrows(AccountExistsException.class, () ->
+                registerService.register(USER_EMAIL2, USER_PASSWORD, USER_NAME, USER_ROLE));
     }
 }

@@ -24,6 +24,7 @@ class UserServiceTests extends UserTestsAbstract {
 
     private final int TWO_ELEMENT_LIST_SIZE = 2;
     private final String USER2_EMAIL = "user2@example.com";
+    private final String USER2_NAME = "user2";
 
     @Autowired
     UserService userService;
@@ -57,7 +58,7 @@ class UserServiceTests extends UserTestsAbstract {
 
     @Test
     void whenAddUserThenItIsAdded() {
-        User user = new User(USER2_EMAIL, USER_PASSWORD, USER_NAME, USER_ROLE);
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, USER_ROLE);
 
         userService.addUser(user);
         List<User> users = userRepository.findAll();
