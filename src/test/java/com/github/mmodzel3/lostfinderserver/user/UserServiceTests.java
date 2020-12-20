@@ -37,7 +37,7 @@ class UserServiceTests extends UserTestsAbstract {
 
     @AfterEach
     void tearDown() {
-        deleteTestUser();
+        deleteAllUsers();
     }
 
     @Test
@@ -88,6 +88,19 @@ class UserServiceTests extends UserTestsAbstract {
         Optional<User> possibleUser = userRepository.findByEmail(testUser.getEmail());
         assertTrue(possibleUser.isPresent());
         assertEquals(TEST_NOTIFICATION_DEST_TOKEN, possibleUser.get().getNotificationDestToken());
+    }
+
+    @Test
+    void whenUpdateUserNotificationDestTokenAndItWasUsedByOtherAccountThenItIsRemoved() {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, USER_ROLE);
+        user.setNotificationDestToken(TEST_NOTIFICATION_DEST_TOKEN);
+        userRepository.save(user);
+
+        userService.updateUserNotificationDestToken(testUser, TEST_NOTIFICATION_DEST_TOKEN);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER2_EMAIL);
+        assertTrue(possibleUser.isPresent());
+        assertNull(possibleUser.get().getNotificationDestToken());
     }
 
     @Test

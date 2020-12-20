@@ -32,6 +32,12 @@ public class UserService {
     }
 
     public void updateUserNotificationDestToken(User user, String notificationDestToken) {
+        if (notificationDestToken != null) {
+            userRepository.findAllByNotificationDestToken(notificationDestToken).stream()
+                    .filter(u -> !u.getId().equals(user.getId()))
+                    .forEach(u -> updateUserNotificationDestToken(u, null));
+        }
+
         user.setNotificationDestToken(notificationDestToken);
         userRepository.save(user);
     }
