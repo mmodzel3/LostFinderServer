@@ -36,6 +36,14 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void updateUserLoginDateToNow(User user) {
+        LocalDateTime now = LocalDateTime.now();
+        user.setLastLoginDate(now);
+        user.setLastUpdateDate(now);
+
+        userRepository.save(user);
+    }
+
     void updateUserLocation(User user, Location location) {
         user.setLocation(location);
         user.setLastUpdateDate(LocalDateTime.now());

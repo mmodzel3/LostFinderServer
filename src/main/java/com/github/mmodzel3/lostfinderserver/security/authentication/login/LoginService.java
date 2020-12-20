@@ -32,6 +32,7 @@ public class LoginService {
                     String token = tokenProvider.generateToken(new TokenDetails(u.getEmail()));
                     UserRole role = u.getRole();
 
+                    userService.updateUserLoginDateToNow(u);
                     return new LoginInfo(token, role);
                 }).orElse(new LoginInfo(StringUtils.EMPTY, UserRole.NOT_LOGGED));
     }

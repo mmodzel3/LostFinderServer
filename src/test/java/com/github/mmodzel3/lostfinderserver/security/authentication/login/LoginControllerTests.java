@@ -57,6 +57,22 @@ class LoginControllerTests extends UserTestsAbstract {
     }
 
     @Test
+    void whenLoginToExistingUserThenUserLastLoginDateIsUpdated() {
+        LoginInfo loginInfo = given().port(port)
+                .param("email", USER_EMAIL)
+                .param("password", USER_PASSWORD)
+                .post("login")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(LoginInfo.class);
+
+        Optional<User> possibleUser = userService.findUserByEmail(USER_EMAIL);
+        assertTrue(possibleUser.isPresent());
+        assertNotNull(possibleUser.get().getLastLoginDate());
+    }
+
+    @Test
     void whenLoginToNonExistingUserThenGotNoTokenAndRoleNotLogged() {
         LoginInfo loginInfo = given().port(port)
                 .param("email", FAKE_USER_EMAIL)
