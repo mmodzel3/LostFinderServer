@@ -9,10 +9,11 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class LogoutServiceTests extends AuthenticatedUserTestsAbstract {
@@ -36,6 +37,26 @@ class LogoutServiceTests extends AuthenticatedUserTestsAbstract {
     @Test
     void whenLogoutThenUserNotificationDestTokenIsCleared() {
         logoutService.logout(testUser);
+
+        Optional<User> possibleUser = userService.findUserByEmail(USER_EMAIL);
+        assertTrue(possibleUser.isPresent());
+        assertNull(possibleUser.get().getNotificationDestToken());
+    }
+
+    @Test
+    void whenRemoveOldNotificationDestTokensAndNoOldNotificationsTokensThenNothingIsCleared() {
+        LocalDateTime maxTokenExpirationLocalDateTime = LocalDateTime.now().minus(Duration.ofDays(1));
+        logoutService.removeOldNotificationDestTokens(maxTokenExpirationLocalDateTime);
+
+        Optional<User> possibleUser = userService.findUserByEmail(USER_EMAIL);
+        assertTrue(possibleUser.isPresent());
+        assertNotNull(possibleUser.get().getNotificationDestToken());
+    }
+
+    @Test
+    void whenCheckLastLoginDatesAndRemoveOldNotificationDestTokensAndUserHasOldNotificationTokenThenHisTokenIsCleared() {
+        LocalDateTime maxTokenExpirationLocalDateTime = LocalDateTime.now().plus(Duration.ofDays(1));
+        logoutService.removeOldNotificationDestTokens(maxTokenExpirationLocalDateTime);
 
         Optional<User> possibleUser = userService.findUserByEmail(USER_EMAIL);
         assertTrue(possibleUser.isPresent());
