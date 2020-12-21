@@ -1,6 +1,7 @@
 package com.github.mmodzel3.lostfinderserver.user;
 
 import com.github.mmodzel3.lostfinderserver.location.Location;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
@@ -10,9 +11,11 @@ import java.util.Optional;
 @Service
 public class UserService {
     private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
 
-    UserService(UserRepository userRepository) {
+    UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public List<User> getAllUsers() {
@@ -48,6 +51,20 @@ public class UserService {
         user.setLastUpdateDate(now);
 
         userRepository.save(user);
+    }
+
+    boolean updateUserPassword(User user, String oldPassword, String newPassword) {
+        if (passwordEncoder.matches(oldPassword, user.getPassword())) {
+            String encodedPassword = passwordEncoder.encode(newPassword);
+
+            user.setPassword(encodedPassword);
+            user.setLastUpdateDate(LocalDateTime.now());
+            userRepository.save(user);
+
+            return true;
+        } else {
+            return false;
+        }
     }
 
     void updateUserLocation(User user, Location location) {

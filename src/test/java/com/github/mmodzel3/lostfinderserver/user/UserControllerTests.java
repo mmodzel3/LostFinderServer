@@ -22,6 +22,9 @@ class UserControllerTests extends AuthenticatedUserTestsAbstract {
 
     private final String TEST_NOTIFICATION_DEST_TOKEN = "token";
 
+    private final String USER_NEW_PASSWORD = "new_password";
+    private final String USER_INVALID_PASSWORD = "bad_password";
+
     @LocalServerPort
     int port;
 
@@ -92,5 +95,45 @@ class UserControllerTests extends AuthenticatedUserTestsAbstract {
         assertEquals(ServerResponse.OK, response);
         assertTrue(possibleUser.isPresent());
         assertEquals(TEST_NOTIFICATION_DEST_TOKEN, possibleUser.get().getNotificationDestToken());
+    }
+
+    @Test
+    void whenUpdateUserPasswordWithBadPasswordThenItIsNotUpdated() {
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("oldPassword", USER_INVALID_PASSWORD)
+                .param("newPassword", USER_NEW_PASSWORD)
+                .post("/api/user/password")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER_EMAIL);
+
+        assertEquals(ServerResponse.INVALID_PARAM, response);
+        assertTrue(possibleUser.isPresent());
+        assertTrue(passwordEncoder.matches(USER_PASSWORD, possibleUser.get().getPassword()));
+    }
+
+    @Test
+    void whenUpdateUserPasswordWithCorrectPasswordThenItIsUpdated() {
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("oldPassword", USER_PASSWORD)
+                .param("newPassword", USER_NEW_PASSWORD)
+                .post("/api/user/password")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER_EMAIL);
+
+        assertEquals(ServerResponse.OK, response);
+        assertTrue(possibleUser.isPresent());
+        assertTrue(passwordEncoder.matches(USER_NEW_PASSWORD, possibleUser.get().getPassword()));
     }
 }

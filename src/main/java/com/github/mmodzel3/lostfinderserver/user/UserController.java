@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
-import static com.github.mmodzel3.lostfinderserver.server.ServerResponse.OK;
+import static com.github.mmodzel3.lostfinderserver.server.ServerResponse.*;
 
 @RestController
 public class UserController {
@@ -40,5 +40,17 @@ public class UserController {
         userService.updateUserNotificationDestToken(user, token);
 
         return OK;
+    }
+
+    @PostMapping("/api/user/password")
+    private ServerResponse updateUserPassword(@AuthenticationPrincipal Authentication authentication,
+                                              @RequestParam String oldPassword,
+                                              @RequestParam String newPassword) {
+        User user = (User) authentication.getPrincipal();
+        if (userService.updateUserPassword(user, oldPassword, newPassword)) {
+            return OK;
+        } else {
+            return INVALID_PARAM;
+        }
     }
 }

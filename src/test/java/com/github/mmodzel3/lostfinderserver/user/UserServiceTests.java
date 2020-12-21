@@ -6,6 +6,7 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.util.List;
 import java.util.Optional;
@@ -26,8 +27,14 @@ class UserServiceTests extends UserTestsAbstract {
     private final String USER2_EMAIL = "user2@example.com";
     private final String USER2_NAME = "user2";
 
+    private final String USER_NEW_PASSWORD = "new_password";
+    private final String USER_INVALID_PASSWORD = "bad_password";
+
     @Autowired
     UserService userService;
+
+    @Autowired
+    PasswordEncoder passwordEncoder;
 
     @BeforeEach
     void setUp() {
@@ -110,5 +117,25 @@ class UserServiceTests extends UserTestsAbstract {
         Optional<User> possibleUser = userRepository.findByEmail(testUser.getEmail());
         assertTrue(possibleUser.isPresent());
         assertEquals(TEST_NOTIFICATION_DEST_TOKEN, possibleUser.get().getNotificationDestToken());
+    }
+
+    @Test
+    void whenUpdateUserPasswordWithBadPasswordThenItIsNotChanged() {
+        boolean changed = userService.updateUserPassword(testUser, USER_INVALID_PASSWORD, USER_NEW_PASSWORD);
+
+        Optional<User> possibleUser = userRepository.findByEmail(testUser.getEmail());
+        assertFalse(changed);
+        assertTrue(possibleUser.isPresent());
+        assertTrue(passwordEncoder.matches(USER_PASSWORD, possibleUser.get().getPassword()));
+    }
+
+    @Test
+    void whenUpdateUserPasswordWithCorrectPasswordThenItIsChanged() {
+        boolean changed = userService.updateUserPassword(testUser, USER_PASSWORD, USER_NEW_PASSWORD);
+
+        Optional<User> possibleUser = userRepository.findByEmail(testUser.getEmail());
+        assertTrue(changed);
+        assertTrue(possibleUser.isPresent());
+        assertTrue(passwordEncoder.matches(USER_NEW_PASSWORD, possibleUser.get().getPassword()));
     }
 }
