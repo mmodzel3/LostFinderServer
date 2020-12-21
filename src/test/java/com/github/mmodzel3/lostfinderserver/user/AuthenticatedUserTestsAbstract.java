@@ -6,8 +6,9 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public abstract class AuthenticatedUserTestsAbstract extends UserTestsAbstract {
-    protected final String AUTHROIZATION = "Authorization";
-    protected final String BEARER = "Bearer";
+    protected static final String AUTHROIZATION = "Authorization";
+    protected static final String BEARER = "Bearer";
+    protected static final String USER_NOTIFICATION_DEST_TOKEN = "notification_token";
 
     @Autowired
     LoginService loginService;
@@ -22,7 +23,7 @@ public abstract class AuthenticatedUserTestsAbstract extends UserTestsAbstract {
     }
 
     private void loginTestUser() {
-        token = loginService.login(USER_EMAIL, USER_PASSWORD).getToken();
+        token = loginService.login(USER_EMAIL, USER_PASSWORD, USER_NOTIFICATION_DEST_TOKEN).getToken();
         authorizationHeader = BEARER + " " + token;
     }
 }

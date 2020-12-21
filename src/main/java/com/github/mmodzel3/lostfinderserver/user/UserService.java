@@ -31,14 +31,28 @@ public class UserService {
         findUserByEmail(email).ifPresent(u -> updateUserNotificationDestToken(u, notificationDestToken));
     }
 
-    void updateUserLocation(User user, Location location) {
-        user.setLocation(location);
-        user.setLastUpdateDate(LocalDateTime.now());
+    public void updateUserNotificationDestToken(User user, String notificationDestToken) {
+        if (notificationDestToken != null) {
+            userRepository.findAllByNotificationDestToken(notificationDestToken).stream()
+                    .filter(u -> !u.getId().equals(user.getId()))
+                    .forEach(u -> updateUserNotificationDestToken(u, null));
+        }
+
+        user.setNotificationDestToken(notificationDestToken);
         userRepository.save(user);
     }
 
-    void updateUserNotificationDestToken(User user, String notificationDestToken) {
-        user.setNotificationDestToken(notificationDestToken);
+    public void updateUserLoginDateToNow(User user) {
+        LocalDateTime now = LocalDateTime.now();
+        user.setLastLoginDate(now);
+        user.setLastUpdateDate(now);
+
+        userRepository.save(user);
+    }
+
+    void updateUserLocation(User user, Location location) {
+        user.setLocation(location);
+        user.setLastUpdateDate(LocalDateTime.now());
         userRepository.save(user);
     }
 }

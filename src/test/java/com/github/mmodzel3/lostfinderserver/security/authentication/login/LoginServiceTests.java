@@ -47,6 +47,15 @@ class LoginServiceTests extends UserTestsAbstract {
     }
 
     @Test
+    void whenLoginToExistingUserThenUserLastLoginDateIsUpdated() {
+        loginService.login(USER_EMAIL, USER_PASSWORD);
+
+        Optional<User> possibleUser = userService.findUserByEmail(USER_EMAIL);
+        assertTrue(possibleUser.isPresent());
+        assertNotNull(possibleUser.get().getLastLoginDate());
+    }
+
+    @Test
     void whenLoginToNotExistingUserThenGotLoginInfoWithNoTokenAndRoleNotLogged() {
         LoginInfo loginInfo = loginService.login(FAKE_USER_EMAIL, FAKE_USER_PASSWORD);
 
