@@ -67,6 +67,19 @@ public class UserService {
         }
     }
 
+    void updateUserRole(User userChanging, String userToChangeEmail, UserRole userRole)
+            throws UserUpdatePermissionException, UserNotFoundException {
+        if (userChanging.isOwner()){
+            Optional<User> possibleUser = findUserByEmail(userToChangeEmail);
+            User user = possibleUser.orElseThrow(UserNotFoundException::new);
+
+            user.setRole(userRole);
+            userRepository.save(user);
+        } else {
+            throw new UserUpdatePermissionException();
+        }
+    }
+
     void updateUserLocation(User user, Location location) {
         user.setLocation(location);
         user.setLastUpdateDate(LocalDateTime.now());

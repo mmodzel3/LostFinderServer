@@ -25,6 +25,9 @@ class UserControllerTests extends AuthenticatedUserTestsAbstract {
     private final String USER_NEW_PASSWORD = "new_password";
     private final String USER_INVALID_PASSWORD = "bad_password";
 
+    private final String USER2_EMAIL = "user2@example.com";
+    private final String USER2_NAME = "user2";
+
     @LocalServerPort
     int port;
 
@@ -135,5 +138,90 @@ class UserControllerTests extends AuthenticatedUserTestsAbstract {
         assertEquals(ServerResponse.OK, response);
         assertTrue(possibleUser.isPresent());
         assertTrue(passwordEncoder.matches(USER_NEW_PASSWORD, possibleUser.get().getPassword()));
+    }
+
+    @Test
+    void whenUpdateUserRoleUsingUserPermissionThenInvalidPermissionStatusIsReturned() {
+        changeTestUserRole(UserRole.USER);
+
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .param("role", UserRole.MANAGER)
+                .post("/api/user/role")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PERMISSION, response);
+    }
+
+    @Test
+    void whenUpdateUserRoleUsingManagerPermissionThenInvalidPermissionStatusIsReturned() {
+        changeTestUserRole(UserRole.MANAGER);
+
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .param("role", UserRole.MANAGER)
+                .post("/api/user/role")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PERMISSION, response);
+    }
+
+    @Test
+    void whenUpdateUserRoleUsingOwnerPermissionThenUserRoleIsUpdated() {
+        changeTestUserRole(UserRole.OWNER);
+
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .param("role", UserRole.MANAGER)
+                .post("/api/user/role")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER2_EMAIL);
+
+        assertEquals(ServerResponse.OK, response);
+        assertTrue(possibleUser.isPresent());
+        assertEquals(UserRole.MANAGER, possibleUser.get().getRole());
+    }
+
+    @Test
+    void whenUpdateUserRoleForUserThatDoesNotExistThenNotFoundResponseIsReturned() {
+        changeTestUserRole(UserRole.OWNER);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .param("role", UserRole.MANAGER)
+                .post("/api/user/role")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.NOT_FOUND, response);
     }
 }

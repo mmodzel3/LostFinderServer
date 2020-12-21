@@ -34,7 +34,6 @@ public class User implements UserDetails {
     @Setter(AccessLevel.NONE)
     private String id;
 
-    @Setter(AccessLevel.NONE)
     @Indexed(unique = true)
     private String email;
 

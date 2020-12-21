@@ -138,4 +138,49 @@ class UserServiceTests extends UserTestsAbstract {
         assertTrue(possibleUser.isPresent());
         assertTrue(passwordEncoder.matches(USER_NEW_PASSWORD, possibleUser.get().getPassword()));
     }
+
+    @Test
+    void whenUpdateUserRoleUsingUserPermissionThenUserUpdatePermissionExceptionIsThrown() {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        changeTestUserRole(UserRole.USER);
+        assertThrows(UserUpdatePermissionException.class, () -> {
+                userService.updateUserRole(testUser, USER2_EMAIL, UserRole.MANAGER);
+        });
+    }
+
+    @Test
+    void whenUpdateUserRoleUsingManagerPermissionThenUserUpdatePermissionExceptionIsThrown() {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        changeTestUserRole(UserRole.MANAGER);
+        assertThrows(UserUpdatePermissionException.class, () -> {
+            userService.updateUserRole(testUser, USER2_EMAIL, UserRole.MANAGER);
+        });
+    }
+
+    @Test
+    void whenUpdateUserRoleUsingOwnerPermissionThenRoleIsUpdated()
+            throws UserUpdatePermissionException, UserNotFoundException {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        changeTestUserRole(UserRole.OWNER);
+        userService.updateUserRole(testUser, USER2_EMAIL, UserRole.MANAGER);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER2_EMAIL);
+        assertTrue(possibleUser.isPresent());
+        assertEquals(UserRole.MANAGER, possibleUser.get().getRole());
+    }
+
+    @Test
+    void whenUpdateUserRoleForUserThatDoesNotExistThenUserNotFoundIsThrown() {
+        changeTestUserRole(UserRole.OWNER);
+
+        assertThrows(UserNotFoundException.class, () -> {
+            userService.updateUserRole(testUser, USER2_EMAIL, UserRole.MANAGER);
+        });
+    }
 }

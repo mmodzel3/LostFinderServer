@@ -6,6 +6,7 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.security.Provider;
 import java.util.List;
 
 import static com.github.mmodzel3.lostfinderserver.server.ServerResponse.*;
@@ -51,6 +52,22 @@ public class UserController {
             return OK;
         } else {
             return INVALID_PARAM;
+        }
+    }
+
+    @PostMapping("/api/user/role")
+    private ServerResponse updateUserPassword(@AuthenticationPrincipal Authentication authentication,
+                                              @RequestParam String userEmail,
+                                              @RequestParam UserRole role) {
+        User user = (User) authentication.getPrincipal();
+
+        try {
+            userService.updateUserRole(user, userEmail, role);
+            return OK;
+        } catch (UserNotFoundException e) {
+            return NOT_FOUND;
+        } catch (UserUpdatePermissionException e) {
+            return INVALID_PERMISSION;
         }
     }
 }
