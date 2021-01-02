@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -140,6 +141,15 @@ class UserServiceTests extends UserTestsAbstract {
     }
 
     @Test
+    void whenUpdateUserRoleForUserThatDoesNotExistThenUserNotFoundIsThrown() {
+        changeTestUserRole(UserRole.OWNER);
+
+        assertThrows(UserNotFoundException.class, () -> {
+            userService.updateUserRole(testUser, USER2_EMAIL, UserRole.MANAGER);
+        });
+    }
+
+    @Test
     void whenUpdateUserRoleUsingUserPermissionThenUserUpdatePermissionExceptionIsThrown() {
         User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
         userRepository.save(user);
@@ -173,14 +183,145 @@ class UserServiceTests extends UserTestsAbstract {
         Optional<User> possibleUser = userRepository.findByEmail(USER2_EMAIL);
         assertTrue(possibleUser.isPresent());
         assertEquals(UserRole.MANAGER, possibleUser.get().getRole());
+        assertTrue(LocalDateTime.now().minusMinutes(1).isBefore(possibleUser.get().getLastUpdateDate()));
     }
 
     @Test
-    void whenUpdateUserRoleForUserThatDoesNotExistThenUserNotFoundIsThrown() {
+    void whenUpdateUserBlockForUserThatDoesNotExistThenUserNotFoundIsThrown() {
         changeTestUserRole(UserRole.OWNER);
 
         assertThrows(UserNotFoundException.class, () -> {
-            userService.updateUserRole(testUser, USER2_EMAIL, UserRole.MANAGER);
+            userService.updateUserBlock(testUser, USER2_EMAIL, true);
         });
+    }
+
+    @Test
+    void whenUpdateUserBlockUsingUserPermissionThenUserUpdatePermissionExceptionIsThrown() {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        changeTestUserRole(UserRole.USER);
+        assertThrows(UserUpdatePermissionException.class, () -> {
+            userService.updateUserBlock(testUser, USER2_EMAIL, true);
+        });
+    }
+
+    @Test
+    void whenUpdateUserBlockForManagerUsingManagerPermissionThenUserUpdatePermissionExceptionIsThrown() {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.MANAGER);
+        userRepository.save(user);
+
+        changeTestUserRole(UserRole.MANAGER);
+        assertThrows(UserUpdatePermissionException.class, () -> {
+            userService.updateUserBlock(testUser, USER2_EMAIL, true);
+        });
+    }
+
+    @Test
+    void whenUpdateUserBlockForOwnerUsingManagerPermissionThenUserUpdatePermissionExceptionIsThrown() {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.OWNER);
+        userRepository.save(user);
+
+        changeTestUserRole(UserRole.MANAGER);
+        assertThrows(UserUpdatePermissionException.class, () -> {
+            userService.updateUserBlock(testUser, USER2_EMAIL, true);
+        });
+    }
+
+    @Test
+    void whenUpdateUserBlockForManagerUsingManagerPermissionThenUserBlockIsUpdated() throws UserUpdatePermissionException, UserNotFoundException {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        changeTestUserRole(UserRole.MANAGER);
+        userService.updateUserBlock(testUser, USER2_EMAIL, true);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER2_EMAIL);
+        assertTrue(possibleUser.isPresent());
+        assertTrue(possibleUser.get().isBlocked());
+        assertTrue(LocalDateTime.now().minusMinutes(1).isBefore(possibleUser.get().getLastUpdateDate()));
+    }
+
+    @Test
+    void whenUpdateUserBlockUsingOwnerPermissionThenUserBlockIsUpdated()
+            throws UserUpdatePermissionException, UserNotFoundException {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        changeTestUserRole(UserRole.OWNER);
+        userService.updateUserBlock(testUser, USER2_EMAIL, true);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER2_EMAIL);
+        assertTrue(possibleUser.isPresent());
+        assertTrue(possibleUser.get().isBlocked());
+        assertTrue(LocalDateTime.now().minusMinutes(1).isBefore(possibleUser.get().getLastUpdateDate()));
+    }
+
+    @Test
+    void whenDeleteUserForUserThatDoesNotExistThenUserNotFoundIsThrown() {
+        changeTestUserRole(UserRole.OWNER);
+
+        assertThrows(UserNotFoundException.class, () -> {
+            userService.deleteUser(testUser, USER2_EMAIL);
+        });
+    }
+
+    @Test
+    void whenDeleteUserUsingUserPermissionThenUserUpdatePermissionExceptionIsThrown() {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        changeTestUserRole(UserRole.USER);
+        assertThrows(UserUpdatePermissionException.class, () -> {
+            userService.deleteUser(testUser, USER2_EMAIL);
+        });
+    }
+
+    @Test
+    void whenDeleteUserForManagerUsingManagerPermissionThenUserUpdatePermissionExceptionIsThrown() {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.MANAGER);
+        userRepository.save(user);
+
+        changeTestUserRole(UserRole.MANAGER);
+        assertThrows(UserUpdatePermissionException.class, () -> {
+            userService.deleteUser(testUser, USER2_EMAIL);
+        });
+    }
+
+    @Test
+    void whenDeleteUserForOwnetUsingManagerPermissionThenUserUpdatePermissionExceptionIsThrown() {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.OWNER);
+        userRepository.save(user);
+
+        changeTestUserRole(UserRole.MANAGER);
+        assertThrows(UserUpdatePermissionException.class, () -> {
+            userService.deleteUser(testUser, USER2_EMAIL);
+        });
+    }
+
+    @Test
+    void whenDeleteUserForUserUsingManagerPermissionThenUserIsDeleted()
+            throws UserUpdatePermissionException, UserNotFoundException {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        changeTestUserRole(UserRole.MANAGER);
+        userService.deleteUser(testUser, USER2_EMAIL);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER2_EMAIL);
+        assertFalse(possibleUser.isPresent());
+    }
+
+    @Test
+    void whenDeleteUserUsingOwnerPermissionThenUserIsDeleted()
+            throws UserUpdatePermissionException, UserNotFoundException {
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        changeTestUserRole(UserRole.OWNER);
+        userService.deleteUser(testUser, USER2_EMAIL);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER2_EMAIL);
+        assertFalse(possibleUser.isPresent());
     }
 }

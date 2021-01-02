@@ -47,6 +47,10 @@ public class User implements UserDetails {
 
     private UserRole role;
 
+    private boolean isBlocked;
+
+    private boolean isDeleted;
+
     @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private String notificationDestToken;
 
@@ -71,6 +75,8 @@ public class User implements UserDetails {
         this.password = password;
         this.username = username;
         this.role = role;
+        this.isBlocked = false;
+        this.isDeleted = false;
         this.lastUpdateDate = LocalDateTime.now();
     }
 
@@ -84,25 +90,25 @@ public class User implements UserDetails {
     @Override
     @JsonIgnore
     public boolean isAccountNonExpired() {
-        return true;
+        return !isDeleted;
     }
 
     @Override
     @JsonIgnore
     public boolean isAccountNonLocked() {
-        return true;
+        return !isBlocked;
     }
 
     @Override
     @JsonIgnore
     public boolean isCredentialsNonExpired() {
-        return true;
+        return !isDeleted;
     }
 
     @Override
     @JsonIgnore
     public boolean isEnabled() {
-        return true;
+        return !isBlocked;
     }
 
     @JsonIgnore
@@ -113,5 +119,12 @@ public class User implements UserDetails {
     @JsonIgnore
     public boolean isOwner() {
         return role.equals(UserRole.OWNER);
+    }
+
+    @JsonIgnore
+    public boolean isMorePrivileged(User user) {
+        if (role.equals(UserRole.MANAGER) && user.role.equals(UserRole.USER)) {
+            return true;
+        } else return role.equals(UserRole.OWNER) && !user.role.equals(UserRole.OWNER);
     }
 }

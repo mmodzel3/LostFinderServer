@@ -13,4 +13,5 @@ import lombok.Setter;
 public class LoginInfo {
     private String token;
     private UserRole role;
+    private boolean isBlocked;
 }

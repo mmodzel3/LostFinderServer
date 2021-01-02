@@ -141,6 +141,24 @@ class UserControllerTests extends AuthenticatedUserTestsAbstract {
     }
 
     @Test
+    void whenUpdateUserRoleForUserThatDoesNotExistThenNotFoundResponseIsReturned() {
+        changeTestUserRole(UserRole.OWNER);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .param("role", UserRole.MANAGER)
+                .post("/api/user/role")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.NOT_FOUND, response);
+    }
+
+    @Test
     void whenUpdateUserRoleUsingUserPermissionThenInvalidPermissionStatusIsReturned() {
         changeTestUserRole(UserRole.USER);
 
@@ -208,20 +226,256 @@ class UserControllerTests extends AuthenticatedUserTestsAbstract {
     }
 
     @Test
-    void whenUpdateUserRoleForUserThatDoesNotExistThenNotFoundResponseIsReturned() {
+    void whenUpdateUserBlockForUserThatDoesNotExistThenNotFoundResponseIsReturned() {
         changeTestUserRole(UserRole.OWNER);
 
         ServerResponse response = given().port(port)
                 .header(AUTHROIZATION, authorizationHeader)
                 .header("Accept","application/json")
                 .param("userEmail", USER2_EMAIL)
-                .param("role", UserRole.MANAGER)
-                .post("/api/user/role")
+                .param("isBlocked", true)
+                .post("/api/user/block")
                 .then()
                 .statusCode(200)
                 .extract()
                 .as(ServerResponse.class);
 
         assertEquals(ServerResponse.NOT_FOUND, response);
+    }
+
+    @Test
+    void whenUpdateUserBlockUsingUserPermissionThenInvalidPermissionStatusIsReturned() {
+        changeTestUserRole(UserRole.USER);
+
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .param("isBlocked", true)
+                .post("/api/user/block")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PERMISSION, response);
+    }
+
+    @Test
+    void whenUpdateUserBlockForManagerUsingManagerPermissionThenInvalidPermissionStatusIsReturned() {
+        changeTestUserRole(UserRole.MANAGER);
+
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.MANAGER);
+        userRepository.save(user);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .param("isBlocked", true)
+                .post("/api/user/block")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PERMISSION, response);
+    }
+
+    @Test
+    void whenUpdateUserBlockForOwnerUsingManagerPermissionThenInvalidPermissionStatusIsReturned() {
+        changeTestUserRole(UserRole.MANAGER);
+
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.OWNER);
+        userRepository.save(user);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .param("isBlocked", true)
+                .post("/api/user/block")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PERMISSION, response);
+    }
+
+    @Test
+    void whenUpdateUserRoleForUserUsingManagerPermissionThenUserRoleIsUpdated() {
+        changeTestUserRole(UserRole.MANAGER);
+
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .param("isBlocked", true)
+                .post("/api/user/block")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER2_EMAIL);
+
+        assertEquals(ServerResponse.OK, response);
+        assertTrue(possibleUser.isPresent());
+        assertTrue(possibleUser.get().isBlocked());
+    }
+
+    @Test
+    void whenUpdateUserBlockUsingOwnerPermissionThenUserRoleIsUpdated() {
+        changeTestUserRole(UserRole.OWNER);
+
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .param("isBlocked", true)
+                .post("/api/user/block")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER2_EMAIL);
+
+        assertEquals(ServerResponse.OK, response);
+        assertTrue(possibleUser.isPresent());
+        assertTrue(possibleUser.get().isBlocked());
+    }
+
+    @Test
+    void whenDeleteUserForUserThatDoesNotExistThenNotFoundResponseIsReturned() {
+        changeTestUserRole(UserRole.OWNER);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .post("/api/user/delete")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.NOT_FOUND, response);
+    }
+
+    @Test
+    void whenDeleteUserUsingUserPermissionThenInvalidPermissionStatusIsReturned() {
+        changeTestUserRole(UserRole.USER);
+
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .post("/api/user/delete")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PERMISSION, response);
+    }
+
+    @Test
+    void whenDeleteUserForManagerUsingManagerPermissionThenInvalidPermissionStatusIsReturned() {
+        changeTestUserRole(UserRole.MANAGER);
+
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.MANAGER);
+        userRepository.save(user);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .post("/api/user/delete")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PERMISSION, response);
+    }
+
+    @Test
+    void whenDeleteUserForOwnerUsingManagerPermissionThenInvalidPermissionStatusIsReturned() {
+        changeTestUserRole(UserRole.MANAGER);
+
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.OWNER);
+        userRepository.save(user);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .post("/api/user/delete")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PERMISSION, response);
+    }
+
+    @Test
+    void whenDeleteUserForUserUsingManagerPermissionThenUserIsDeleted() {
+        changeTestUserRole(UserRole.MANAGER);
+
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .post("/api/user/delete")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER2_EMAIL);
+
+        assertEquals(ServerResponse.OK, response);
+        assertFalse(possibleUser.isPresent());
+    }
+
+    @Test
+    void whenDeleteUserUsingOwnerPermissionThenUserIsDeleted() {
+        changeTestUserRole(UserRole.OWNER);
+
+        User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
+        userRepository.save(user);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHROIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("userEmail", USER2_EMAIL)
+                .post("/api/user/delete")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER2_EMAIL);
+
+        assertEquals(ServerResponse.OK, response);
+        assertFalse(possibleUser.isPresent());
     }
 }

@@ -2,6 +2,7 @@ package com.github.mmodzel3.lostfinderserver.user;
 
 import com.github.mmodzel3.lostfinderserver.location.Location;
 import com.github.mmodzel3.lostfinderserver.server.ServerResponse;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -56,13 +57,49 @@ public class UserController {
     }
 
     @PostMapping("/api/user/role")
-    private ServerResponse updateUserPassword(@AuthenticationPrincipal Authentication authentication,
+    private ServerResponse updateUserRole(@AuthenticationPrincipal Authentication authentication,
                                               @RequestParam String userEmail,
                                               @RequestParam UserRole role) {
         User user = (User) authentication.getPrincipal();
 
         try {
             userService.updateUserRole(user, userEmail, role);
+            return OK;
+        } catch (UserNotFoundException e) {
+            return NOT_FOUND;
+        } catch (UserUpdatePermissionException e) {
+            return INVALID_PERMISSION;
+        }
+    }
+
+    @PostMapping("/api/user/block")
+    private ServerResponse updateUserRole(@AuthenticationPrincipal Authentication authentication,
+                                          @RequestParam String userEmail,
+                                          @RequestParam boolean isBlocked) {
+        User user = (User) authentication.getPrincipal();
+
+        try {
+            userService.updateUserBlock(user, userEmail, isBlocked);
+            return OK;
+        } catch (UserNotFoundException e) {
+            return NOT_FOUND;
+        } catch (UserUpdatePermissionException e) {
+            return INVALID_PERMISSION;
+        }
+    }
+
+    @PostMapping("/api/user/delete")
+    private ServerResponse deleteUser(@AuthenticationPrincipal Authentication authentication,
+                                          @RequestParam(defaultValue = StringUtils.EMPTY) String userEmail) {
+        User user = (User) authentication.getPrincipal();
+
+        try {
+            if (!userEmail.isEmpty()) {
+                userService.deleteUser(user, userEmail);
+            } else {
+                userService.deleteUser(user, user.getEmail());
+            }
+
             return OK;
         } catch (UserNotFoundException e) {
             return NOT_FOUND;
