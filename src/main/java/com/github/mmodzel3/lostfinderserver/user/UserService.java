@@ -112,12 +112,13 @@ public class UserService {
 
         if (userChanging.isMorePrivileged(user) || userChanging.getEmail().equals(userToDeleteEmail)){
             String uuid = UUID.randomUUID().toString();
-            String deletedPostfix = DELETED + uuid;
+            String deletedUsernamePostfix = " [" + DELETED + " " + uuid + "]";
+            String deletedEmailPostfix = DELETED + uuid;
 
-            user.setUsername(user.getUsername() + deletedPostfix);
-            user.setEmail(user.getEmail() + deletedPostfix);
+            user.setUsername(user.getUsername() + deletedUsernamePostfix);
+            user.setEmail(user.getEmail() + deletedEmailPostfix);
             user.setNotificationDestToken(null);
-            
+
             user.setBlocked(true);
             user.setDeleted(true);
             user.setLastUpdateDate(LocalDateTime.now());
