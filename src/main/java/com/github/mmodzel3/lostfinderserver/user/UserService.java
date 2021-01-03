@@ -116,7 +116,8 @@ public class UserService {
 
             user.setUsername(user.getUsername() + deletedPostfix);
             user.setEmail(user.getEmail() + deletedPostfix);
-
+            user.setNotificationDestToken(null);
+            
             user.setBlocked(true);
             user.setDeleted(true);
             user.setLastUpdateDate(LocalDateTime.now());
