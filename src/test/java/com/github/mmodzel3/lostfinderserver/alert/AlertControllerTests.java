@@ -1,6 +1,5 @@
 package com.github.mmodzel3.lostfinderserver.alert;
 
-import com.github.mmodzel3.lostfinderserver.notification.PushNotificationProcessingException;
 import com.github.mmodzel3.lostfinderserver.notification.PushNotificationService;
 import com.github.mmodzel3.lostfinderserver.user.User;
 import com.github.mmodzel3.lostfinderserver.user.UserRole;
@@ -60,7 +59,7 @@ class AlertControllerTests extends AlertTestsAbstract {
         createTestNonActiveAlert(testUser);
 
         Alert[] alerts = given().port(port)
-                .header(AUTHROIZATION, authorizationHeader)
+                .header(AUTHORIZATION, authorizationHeader)
                 .get("/api/alerts")
                 .then()
                 .statusCode(200)
@@ -75,7 +74,7 @@ class AlertControllerTests extends AlertTestsAbstract {
         UserAlert userAlert = buildTestUserAlert();
 
         given().port(port)
-                .header(AUTHROIZATION, authorizationHeader)
+                .header(AUTHORIZATION, authorizationHeader)
                 .header("Content-Type","application/json")
                 .header("Accept","application/json")
                 .body(userAlert)
@@ -94,7 +93,7 @@ class AlertControllerTests extends AlertTestsAbstract {
         UserAlert userAlert = buildTestUserAlert(AlertType.GATHER);
 
         given().port(port)
-                .header(AUTHROIZATION, authorizationHeader)
+                .header(AUTHORIZATION, authorizationHeader)
                 .header("Content-Type","application/json")
                 .header("Accept","application/json")
                 .body(userAlert)
@@ -106,7 +105,7 @@ class AlertControllerTests extends AlertTestsAbstract {
     @Test
     void whenEndAlertThenItStatusIsChanged() {
         given().port(port)
-                .header(AUTHROIZATION, authorizationHeader)
+                .header(AUTHORIZATION, authorizationHeader)
                 .param("alertId", testAlert.getId())
                 .put("/api/alerts/end")
                 .then()
@@ -119,7 +118,7 @@ class AlertControllerTests extends AlertTestsAbstract {
     @Test
     void whenEndAlertThatDoesNotExistThenAlertDoesNotExistsException() {
         given().port(port)
-                .header(AUTHROIZATION, authorizationHeader)
+                .header(AUTHORIZATION, authorizationHeader)
                 .param("alertId", NOT_EXISTING_ALERT_ID)
                 .put("/api/alerts/end")
                 .then()
@@ -134,7 +133,7 @@ class AlertControllerTests extends AlertTestsAbstract {
         Alert alert = buildTestAlert(user);
 
         given().port(port)
-                .header(AUTHROIZATION, authorizationHeader)
+                .header(AUTHORIZATION, authorizationHeader)
                 .param("alertId", alert.getId())
                 .put("/api/alerts/end")
                 .then()
@@ -146,7 +145,7 @@ class AlertControllerTests extends AlertTestsAbstract {
         changeTestUserRole(UserRole.MANAGER);
 
         Alert alert = given().port(port)
-                .header(AUTHROIZATION, authorizationHeader)
+                .header(AUTHORIZATION, authorizationHeader)
                 .param("alertId", testAlert.getId())
                 .put("/api/alerts/end")
                 .then()
@@ -162,7 +161,7 @@ class AlertControllerTests extends AlertTestsAbstract {
         changeTestUserRole(UserRole.OWNER);
 
         Alert alert = given().port(port)
-                .header(AUTHROIZATION, authorizationHeader)
+                .header(AUTHORIZATION, authorizationHeader)
                 .param("alertId", testAlert.getId())
                 .put("/api/alerts/end")
                 .then()
@@ -181,7 +180,7 @@ class AlertControllerTests extends AlertTestsAbstract {
         alertRepository.save(testAlert);
 
         Alert alert = given().port(port)
-                .header(AUTHROIZATION, authorizationHeader)
+                .header(AUTHORIZATION, authorizationHeader)
                 .param("alertId", testAlert.getId())
                 .put("/api/alerts/end")
                 .then()

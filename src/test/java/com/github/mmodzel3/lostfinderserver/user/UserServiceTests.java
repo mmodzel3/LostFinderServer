@@ -17,6 +17,7 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UserServiceTests extends UserTestsAbstract {
+    private final int ZERO_ELEMENT_LIST_SIZE = 0;
     private final int ONE_ELEMENT_LIST_SIZE = 1;
 
     private final double TEST_LATITUDE = 20.2;
@@ -62,6 +63,16 @@ class UserServiceTests extends UserTestsAbstract {
 
         assertEquals(ONE_ELEMENT_LIST_SIZE, users.size());
         assertEquals(USER_EMAIL, users.get(0).getEmail());
+    }
+
+    @Test
+    void whenGetExistingUsersThenGotNotDeleted() {
+        testUser.setDeleted(true);
+        userRepository.save(testUser);
+
+        List<User> users = userService.getExistingUsers();
+
+        assertEquals(ZERO_ELEMENT_LIST_SIZE, users.size());
     }
 
     @Test

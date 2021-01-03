@@ -22,8 +22,12 @@ public class UserController {
     }
 
     @GetMapping("/api/users")
-    private List<User> getAllUsers() {
-        return userService.getAllUsers();
+    private List<User> getUsers(@RequestParam(required = false) boolean all) {
+        if (all) {
+            return userService.getAllUsers();
+        } else {
+            return userService.getExistingUsers();
+        }
     }
 
     @PostMapping("/api/user/location")

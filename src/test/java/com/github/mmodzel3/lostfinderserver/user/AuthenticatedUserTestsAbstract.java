@@ -6,7 +6,7 @@ import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
 public abstract class AuthenticatedUserTestsAbstract extends UserTestsAbstract {
-    protected static final String AUTHROIZATION = "Authorization";
+    protected static final String AUTHORIZATION = "Authorization";
     protected static final String BEARER = "Bearer";
     protected static final String USER_NOTIFICATION_DEST_TOKEN = "notification_token";
 

@@ -22,10 +22,14 @@ public class UserService {
         this.passwordEncoder = passwordEncoder;
     }
 
-    public List<User> getAllUsers() {
+    public List<User> getExistingUsers() {
         return userRepository.findAll().stream()
                 .filter(u -> !u.isDeleted())
                 .collect(Collectors.toList());
+    }
+
+    public List<User> getAllUsers() {
+        return userRepository.findAll();
     }
 
     public Optional<User> findUserByEmail(String email) {
