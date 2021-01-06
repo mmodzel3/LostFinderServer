@@ -17,12 +17,15 @@ class RegisterController {
     }
 
     @PostMapping
-    ServerResponse register(@RequestParam String email, @RequestParam String password, @RequestParam String username) {
+    ServerResponse register(@RequestParam String email, @RequestParam String password,
+                            @RequestParam(defaultValue = "") String serverPassword, @RequestParam String username) {
         try {
-            registerService.register(email, password, username);
+            registerService.register(email, password, serverPassword, username);
             return ServerResponse.OK;
         } catch (AccountExistsException e) {
             return ServerResponse.DUPLICATED;
+        } catch (InvalidServerPasswordException e) {
+            return ServerResponse.INVALID_PERMISSION;
         }
     }
 }
