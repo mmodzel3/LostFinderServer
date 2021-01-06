@@ -19,14 +19,13 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ChatControllerTests extends ChatTestsAbstract {
-    private final int ONE_ELEMENT_SIZE = 1;
-    private final int TWO_ELEMENT_SIZE = 2;
-    private final int FIRST_ELEMENT = 0;
+    private static final int ONE_ELEMENT_SIZE = 1;
+    private static final int TWO_ELEMENT_SIZE = 2;
+    private static final int FIRST_ELEMENT = 0;
 
     @LocalServerPort
     int port;

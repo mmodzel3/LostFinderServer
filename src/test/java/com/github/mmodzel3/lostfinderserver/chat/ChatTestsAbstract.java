@@ -1,13 +1,12 @@
 package com.github.mmodzel3.lostfinderserver.chat;
 
 import com.github.mmodzel3.lostfinderserver.user.AuthenticatedUserTestsAbstract;
-import com.sun.jna.platform.win32.WinUser;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import java.time.LocalDateTime;
 
 class ChatTestsAbstract extends AuthenticatedUserTestsAbstract {
-    protected final String MSG = "Example message.";
+    protected static final String MSG = "Example message.";
 
     @Autowired
     protected ChatRepository chatRepository;

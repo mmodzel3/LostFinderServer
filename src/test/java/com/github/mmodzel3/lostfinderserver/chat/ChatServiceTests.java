@@ -21,10 +21,10 @@ import static org.mockito.Mockito.verify;
 
 @SpringBootTest
 class ChatServiceTests extends ChatTestsAbstract {
-    private final int ONE_ELEMENT_SIZE = 1;
-    private final int TWO_ELEMENT_SIZE = 2;
-    private final int FIRST_ELEMENT = 0;
-    private final int ONE_MESSAGE = 1;
+    private static final int ONE_ELEMENT_SIZE = 1;
+    private static final int TWO_ELEMENT_SIZE = 2;
+    private static final int FIRST_ELEMENT = 0;
+    private static final int ONE_MESSAGE = 1;
 
     @MockBean
     private PushNotificationService pushNotificationService;

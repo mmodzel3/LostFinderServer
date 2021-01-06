@@ -17,20 +17,20 @@ import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest
 class UserServiceTests extends UserTestsAbstract {
-    private final int ZERO_ELEMENT_LIST_SIZE = 0;
-    private final int ONE_ELEMENT_LIST_SIZE = 1;
+    private static final int ZERO_ELEMENT_LIST_SIZE = 0;
+    private static final int ONE_ELEMENT_LIST_SIZE = 1;
 
-    private final double TEST_LATITUDE = 20.2;
-    private final double TEST_LONGITUDE = 23.2;
+    private static final double TEST_LATITUDE = 20.2;
+    private static final double TEST_LONGITUDE = 23.2;
 
-    private final String TEST_NOTIFICATION_DEST_TOKEN = "token";
+    private static final String TEST_NOTIFICATION_DEST_TOKEN = "token";
 
-    private final int TWO_ELEMENT_LIST_SIZE = 2;
-    private final String USER2_EMAIL = "user2@example.com";
-    private final String USER2_NAME = "user2";
+    private static final int TWO_ELEMENT_LIST_SIZE = 2;
+    private static final String USER2_EMAIL = "user2@example.com";
+    private static final String USER2_NAME = "user2";
 
-    private final String USER_NEW_PASSWORD = "new_password";
-    private final String USER_INVALID_PASSWORD = "bad_password";
+    private static final String USER_NEW_PASSWORD = "new_password";
+    private static final String USER_INVALID_PASSWORD = "bad_password";
 
     @Autowired
     UserService userService;

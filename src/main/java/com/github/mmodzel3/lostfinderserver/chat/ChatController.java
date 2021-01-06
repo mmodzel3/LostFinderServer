@@ -1,6 +1,5 @@
 package com.github.mmodzel3.lostfinderserver.chat;
 
-import com.github.mmodzel3.lostfinderserver.location.Location;
 import com.github.mmodzel3.lostfinderserver.user.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
