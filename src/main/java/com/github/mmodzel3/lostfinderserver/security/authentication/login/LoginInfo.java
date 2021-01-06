@@ -12,6 +12,8 @@ import lombok.Setter;
 @AllArgsConstructor
 public class LoginInfo {
     private String token;
+    private String email;
+    private String username;
     private UserRole role;
     private boolean isBlocked;
 }

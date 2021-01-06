@@ -34,11 +34,11 @@ public class LoginService {
                         UserRole role = u.getRole();
 
                         userService.updateUserLoginDateToNow(u);
-                        return new LoginInfo(token, role, false);
+                        return new LoginInfo(token, u.getEmail(), u.getUsername(), role, false);
                     } else {
-                        return new LoginInfo(StringUtils.EMPTY, UserRole.NOT_LOGGED,  true);
+                        return new LoginInfo(StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, UserRole.NOT_LOGGED,  true);
                     }
-                }).orElse(new LoginInfo(StringUtils.EMPTY, UserRole.NOT_LOGGED, false));
+                }).orElse(new LoginInfo(StringUtils.EMPTY, StringUtils.EMPTY, StringUtils.EMPTY, UserRole.NOT_LOGGED, false));
     }
 
     public LoginInfo login(String email, String password, String notificationDestToken) {

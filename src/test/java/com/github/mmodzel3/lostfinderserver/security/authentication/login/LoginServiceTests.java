@@ -39,10 +39,12 @@ class LoginServiceTests extends UserTestsAbstract {
     }
 
     @Test
-    void whenLoginToExistingUserThenGotLoginInfoWithTokenAndUserRole() {
+    void whenLoginToExistingUserThenGotLoginInfoWithTokenAndUserInformation() {
         LoginInfo loginInfo = loginService.login(USER_EMAIL, USER_PASSWORD);
 
         assertNotEquals(StringUtils.EMPTY, loginInfo.getToken());
+        assertEquals(testUser.getEmail(), loginInfo.getEmail());
+        assertEquals(testUser.getUsername(), loginInfo.getUsername());
         assertEquals(testUser.getRole(), loginInfo.getRole());
     }
 

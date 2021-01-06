@@ -41,7 +41,7 @@ class LoginControllerTests extends UserTestsAbstract {
     }
 
     @Test
-    void whenLoginToExistingUserThenGotTokenAndUserRole() {
+    void whenLoginToExistingUserThenGotTokenAndUserInformation() {
         LoginInfo loginInfo = given().port(port)
                 .param("email", USER_EMAIL)
                 .param("password", USER_PASSWORD)
@@ -52,6 +52,8 @@ class LoginControllerTests extends UserTestsAbstract {
                 .as(LoginInfo.class);
 
         assertNotEquals(StringUtils.EMPTY, loginInfo.getToken());
+        assertEquals(testUser.getEmail(), loginInfo.getEmail());
+        assertEquals(testUser.getUsername(), loginInfo.getUsername());
         assertEquals(testUser.getRole(), loginInfo.getRole());
     }
 
