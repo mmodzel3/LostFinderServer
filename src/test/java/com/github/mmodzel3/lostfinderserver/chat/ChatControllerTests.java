@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.mmodzel3.lostfinderserver.notification.PushNotification;
 import com.github.mmodzel3.lostfinderserver.notification.PushNotificationProcessingException;
 import com.github.mmodzel3.lostfinderserver.notification.PushNotificationService;
+import com.github.mmodzel3.lostfinderserver.server.ServerResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -19,14 +20,13 @@ import java.util.List;
 
 import static io.restassured.RestAssured.given;
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertSame;
 import static org.mockito.Mockito.verify;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class ChatControllerTests extends ChatTestsAbstract {
-    private final int ONE_ELEMENT_SIZE = 1;
-    private final int TWO_ELEMENT_SIZE = 2;
-    private final int FIRST_ELEMENT = 0;
+    private static final int ONE_ELEMENT_SIZE = 1;
+    private static final int TWO_ELEMENT_SIZE = 2;
+    private static final int FIRST_ELEMENT = 0;
 
     @LocalServerPort
     int port;
@@ -72,7 +72,7 @@ class ChatControllerTests extends ChatTestsAbstract {
         LocalDateTime now = LocalDateTime.now();
         ChatUserMessage userMessage = new ChatUserMessage(MSG, now);
 
-        ChatMessage message = given().port(port)
+        ServerResponse response = given().port(port)
                 .header(AUTHORIZATION, authorizationHeader)
                 .header("Content-Type","application/json")
                 .header("Accept","application/json")
@@ -81,13 +81,11 @@ class ChatControllerTests extends ChatTestsAbstract {
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(ChatMessage.class);
+                .as(ServerResponse.class);
 
         List<ChatMessage> messages = chatRepository.findAll();
 
         assertEquals(TWO_ELEMENT_SIZE, messages.size());
-        assertEquals(MSG, message.getMsg());
-        assertEquals(testUser.getId(), message.getUser().getId());
     }
 
     @Test
@@ -96,16 +94,14 @@ class ChatControllerTests extends ChatTestsAbstract {
         LocalDateTime now = LocalDateTime.now();
         ChatUserMessage userMessage = new ChatUserMessage(MSG, now);
 
-        ChatMessage message = given().port(port)
+        given().port(port)
                 .header(AUTHORIZATION, authorizationHeader)
                 .header("Content-Type","application/json")
                 .header("Accept","application/json")
                 .body(userMessage)
                 .post("/api/chat")
                 .then()
-                .statusCode(200)
-                .extract()
-                .as(ChatMessage.class);
+                .statusCode(200);
 
         verify(pushNotificationService).sendNotificationToAllUsers(argument.capture());
 

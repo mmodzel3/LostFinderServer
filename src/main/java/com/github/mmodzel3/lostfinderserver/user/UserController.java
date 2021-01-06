@@ -7,7 +7,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Provider;
 import java.util.List;
 
 import static com.github.mmodzel3.lostfinderserver.server.ServerResponse.*;

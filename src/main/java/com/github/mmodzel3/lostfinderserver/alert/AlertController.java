@@ -1,6 +1,7 @@
 package com.github.mmodzel3.lostfinderserver.alert;
 
 import com.github.mmodzel3.lostfinderserver.notification.PushNotificationProcessingException;
+import com.github.mmodzel3.lostfinderserver.server.ServerResponse;
 import com.github.mmodzel3.lostfinderserver.user.User;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -22,19 +23,34 @@ class AlertController {
     }
 
     @PostMapping("/api/alerts/add")
-    Alert addAlert(@AuthenticationPrincipal Authentication authentication,
-                   @RequestBody UserAlert userAlert) throws PushNotificationProcessingException, AlertAddPermissionException {
+    ServerResponse addAlert(@AuthenticationPrincipal Authentication authentication,
+                            @RequestBody UserAlert userAlert) {
         User user = (User) authentication.getPrincipal();
 
-        return alertService.addAlert(user, userAlert);
+        try {
+            alertService.addAlert(user, userAlert);
+            return ServerResponse.OK;
+        } catch (AlertAddPermissionException e) {
+            return ServerResponse.INVALID_PERMISSION;
+        } catch (PushNotificationProcessingException e) {
+            return ServerResponse.OK;
+        }
     }
 
     @PutMapping("/api/alerts/end")
-    Alert endAlert(@AuthenticationPrincipal Authentication authentication,
-                   @RequestParam String alertId)
-            throws PushNotificationProcessingException, AlertDoesNotExistsException, AlertUpdatePermissionException {
+    ServerResponse endAlert(@AuthenticationPrincipal Authentication authentication,
+                   @RequestParam String alertId) {
         User user = (User) authentication.getPrincipal();
 
-        return alertService.endAlert(user, alertId);
+        try {
+            alertService.endAlert(user, alertId);
+            return ServerResponse.OK;
+        } catch (AlertUpdatePermissionException e) {
+            return ServerResponse.INVALID_PERMISSION;
+        } catch (AlertDoesNotExistsException e) {
+            return ServerResponse.NOT_FOUND;
+        } catch (PushNotificationProcessingException e) {
+            return ServerResponse.OK;
+        }
     }
 }
