@@ -7,15 +7,25 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 public class UserService {
+    private final static String DELETED = "-DELETED";
+
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
 
     UserService(UserRepository userRepository, PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
+    }
+
+    public List<User> getExistingUsers() {
+        return userRepository.findAll().stream()
+                .filter(u -> !u.isDeleted())
+                .collect(Collectors.toList());
     }
 
     public List<User> getAllUsers() {
@@ -64,6 +74,57 @@ public class UserService {
             return true;
         } else {
             return false;
+        }
+    }
+
+    void updateUserRole(User userChanging, String userToChangeEmail, UserRole userRole)
+            throws UserUpdatePermissionException, UserNotFoundException {
+        if (userChanging.isOwner()){
+            Optional<User> possibleUser = findUserByEmail(userToChangeEmail);
+            User user = possibleUser.orElseThrow(UserNotFoundException::new);
+
+            user.setRole(userRole);
+            user.setLastUpdateDate(LocalDateTime.now());
+            userRepository.save(user);
+        } else {
+            throw new UserUpdatePermissionException();
+        }
+    }
+
+    void updateUserBlock(User userChanging, String userToChangeEmail, boolean isBlocked)
+            throws UserUpdatePermissionException, UserNotFoundException {
+        Optional<User> possibleUser = findUserByEmail(userToChangeEmail);
+        User user = possibleUser.orElseThrow(UserNotFoundException::new);
+
+        if (userChanging.isMorePrivileged(user)){
+            user.setBlocked(isBlocked);
+            user.setLastUpdateDate(LocalDateTime.now());
+            userRepository.save(user);
+        } else {
+            throw new UserUpdatePermissionException();
+        }
+    }
+
+    void deleteUser(User userChanging, String userToDeleteEmail)
+            throws UserUpdatePermissionException, UserNotFoundException {
+        Optional<User> possibleUser = findUserByEmail(userToDeleteEmail);
+        User user = possibleUser.orElseThrow(UserNotFoundException::new);
+
+        if (userChanging.isMorePrivileged(user) || userChanging.getEmail().equals(userToDeleteEmail)){
+            String uuid = UUID.randomUUID().toString();
+            String deletedUsernamePostfix = " [" + DELETED + " " + uuid + "]";
+            String deletedEmailPostfix = DELETED + uuid;
+
+            user.setUsername(user.getUsername() + deletedUsernamePostfix);
+            user.setEmail(user.getEmail() + deletedEmailPostfix);
+            user.setNotificationDestToken(null);
+
+            user.setBlocked(true);
+            user.setDeleted(true);
+            user.setLastUpdateDate(LocalDateTime.now());
+            userRepository.save(user);
+        } else {
+            throw new UserUpdatePermissionException();
         }
     }
 

@@ -30,7 +30,7 @@ class PushNotificationService {
     public void sendNotificationToAllUsers(PushNotification notification) throws PushNotificationProcessingException {
         Message.Builder messageBuilder = prepareMessageFromPushNotification(notification);
 
-        userService.getAllUsers().forEach(user -> {
+        userService.getExistingUsers().forEach(user -> {
             try {
                 if (user.getNotificationDestToken() != null) {
                     sendMessageToUser(user, messageBuilder);

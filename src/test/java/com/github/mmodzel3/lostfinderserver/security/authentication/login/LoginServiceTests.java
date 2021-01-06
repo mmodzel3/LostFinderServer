@@ -90,4 +90,17 @@ class LoginServiceTests extends UserTestsAbstract {
         assertTrue(possibleUser.isPresent());
         assertEquals(testUser.getNotificationDestToken(), possibleUser.get().getNotificationDestToken());
     }
+
+    @Test
+    void whenLoginToBlockedUserThenGotInfoAboutBeingBlockedAndNotificationDestTokenIsNotUpdated() {
+        blockTestUser();
+
+        LoginInfo loginInfo = loginService.login(USER_EMAIL, USER_PASSWORD, USER_NOTIFICATION_DEST_TOKEN);
+        Optional<User> possibleUser = userService.findUserByEmail(USER_EMAIL);
+
+        assertEquals(StringUtils.EMPTY, loginInfo.getToken());
+        assertTrue(loginInfo.isBlocked());
+        assertTrue(possibleUser.isPresent());
+        assertEquals(testUser.getNotificationDestToken(), possibleUser.get().getNotificationDestToken());
+    }
 }

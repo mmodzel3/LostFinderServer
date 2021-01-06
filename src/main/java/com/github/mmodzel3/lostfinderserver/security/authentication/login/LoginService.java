@@ -29,12 +29,16 @@ public class LoginService {
 
         return possibleUser.filter((u) -> passwordEncoder.matches(password, u.getPassword()))
                 .map(u -> {
-                    String token = tokenProvider.generateToken(new TokenDetails(u.getEmail()));
-                    UserRole role = u.getRole();
+                    if (!u.isBlocked() && !u.isDeleted()) {
+                        String token = tokenProvider.generateToken(new TokenDetails(u.getEmail()));
+                        UserRole role = u.getRole();
 
-                    userService.updateUserLoginDateToNow(u);
-                    return new LoginInfo(token, role);
-                }).orElse(new LoginInfo(StringUtils.EMPTY, UserRole.NOT_LOGGED));
+                        userService.updateUserLoginDateToNow(u);
+                        return new LoginInfo(token, role, false);
+                    } else {
+                        return new LoginInfo(StringUtils.EMPTY, UserRole.NOT_LOGGED,  true);
+                    }
+                }).orElse(new LoginInfo(StringUtils.EMPTY, UserRole.NOT_LOGGED, false));
     }
 
     public LoginInfo login(String email, String password, String notificationDestToken) {

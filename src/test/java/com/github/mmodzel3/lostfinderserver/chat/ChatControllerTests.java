@@ -53,7 +53,7 @@ class ChatControllerTests extends ChatTestsAbstract {
     @Test
     void whenGetMessagesThenGotThem() {
         ChatMessage[] messages = given().port(port)
-                .header(AUTHROIZATION, authorizationHeader)
+                .header(AUTHORIZATION, authorizationHeader)
                 .param("page", 0)
                 .param("pageSize", 10)
                 .get("/api/chat")
@@ -73,7 +73,7 @@ class ChatControllerTests extends ChatTestsAbstract {
         ChatUserMessage userMessage = new ChatUserMessage(MSG, now);
 
         ChatMessage message = given().port(port)
-                .header(AUTHROIZATION, authorizationHeader)
+                .header(AUTHORIZATION, authorizationHeader)
                 .header("Content-Type","application/json")
                 .header("Accept","application/json")
                 .body(userMessage)
@@ -97,7 +97,7 @@ class ChatControllerTests extends ChatTestsAbstract {
         ChatUserMessage userMessage = new ChatUserMessage(MSG, now);
 
         ChatMessage message = given().port(port)
-                .header(AUTHROIZATION, authorizationHeader)
+                .header(AUTHORIZATION, authorizationHeader)
                 .header("Content-Type","application/json")
                 .header("Accept","application/json")
                 .body(userMessage)

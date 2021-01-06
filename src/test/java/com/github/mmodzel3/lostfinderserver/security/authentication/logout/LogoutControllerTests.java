@@ -41,7 +41,7 @@ class LogoutControllerTests extends AuthenticatedUserTestsAbstract {
     @Test
     void whenLogoutThenUserNotificationDestTokenIsCleared() {
         given().port(port)
-                .header(AUTHROIZATION, authorizationHeader)
+                .header(AUTHORIZATION, authorizationHeader)
                 .post("/api/logout")
                 .then()
                 .statusCode(200);

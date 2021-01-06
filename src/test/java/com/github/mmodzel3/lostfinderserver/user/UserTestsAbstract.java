@@ -55,4 +55,10 @@ public abstract class UserTestsAbstract {
 
         userRepository.save(testUser);
     }
+
+    protected void blockTestUser() {
+        testUser.setBlocked(true);
+
+        userRepository.save(testUser);
+    }
 }
