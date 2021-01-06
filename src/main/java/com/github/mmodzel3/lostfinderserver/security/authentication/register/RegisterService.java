@@ -14,7 +14,7 @@ public class RegisterService {
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
 
-    @Value("${register.server.password:''}")
+    @Value("${register.server.password:}")
     String serverPassword;
 
     RegisterService(UserService userService, PasswordEncoder passwordEncoder) {
