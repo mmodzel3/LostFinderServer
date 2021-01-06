@@ -4,6 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.github.mmodzel3.lostfinderserver.notification.PushNotification;
 import com.github.mmodzel3.lostfinderserver.notification.PushNotificationProcessingException;
 import com.github.mmodzel3.lostfinderserver.notification.PushNotificationService;
+import com.github.mmodzel3.lostfinderserver.server.ServerResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -71,7 +72,7 @@ class ChatControllerTests extends ChatTestsAbstract {
         LocalDateTime now = LocalDateTime.now();
         ChatUserMessage userMessage = new ChatUserMessage(MSG, now);
 
-        ChatMessage message = given().port(port)
+        ServerResponse response = given().port(port)
                 .header(AUTHORIZATION, authorizationHeader)
                 .header("Content-Type","application/json")
                 .header("Accept","application/json")
@@ -80,13 +81,11 @@ class ChatControllerTests extends ChatTestsAbstract {
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(ChatMessage.class);
+                .as(ServerResponse.class);
 
         List<ChatMessage> messages = chatRepository.findAll();
 
         assertEquals(TWO_ELEMENT_SIZE, messages.size());
-        assertEquals(MSG, message.getMsg());
-        assertEquals(testUser.getId(), message.getUser().getId());
     }
 
     @Test
@@ -95,16 +94,14 @@ class ChatControllerTests extends ChatTestsAbstract {
         LocalDateTime now = LocalDateTime.now();
         ChatUserMessage userMessage = new ChatUserMessage(MSG, now);
 
-        ChatMessage message = given().port(port)
+        given().port(port)
                 .header(AUTHORIZATION, authorizationHeader)
                 .header("Content-Type","application/json")
                 .header("Accept","application/json")
                 .body(userMessage)
                 .post("/api/chat")
                 .then()
-                .statusCode(200)
-                .extract()
-                .as(ChatMessage.class);
+                .statusCode(200);
 
         verify(pushNotificationService).sendNotificationToAllUsers(argument.capture());
 
