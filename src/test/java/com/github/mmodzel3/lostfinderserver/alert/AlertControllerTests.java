@@ -1,6 +1,7 @@
 package com.github.mmodzel3.lostfinderserver.alert;
 
 import com.github.mmodzel3.lostfinderserver.notification.PushNotificationService;
+import com.github.mmodzel3.lostfinderserver.server.ServerResponse;
 import com.github.mmodzel3.lostfinderserver.user.User;
 import com.github.mmodzel3.lostfinderserver.user.UserRole;
 import org.junit.jupiter.api.AfterEach;
@@ -14,10 +15,10 @@ import org.springframework.boot.web.server.LocalServerPort;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 import static io.restassured.RestAssured.given;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class AlertControllerTests extends AlertTestsAbstract {
@@ -55,7 +56,7 @@ class AlertControllerTests extends AlertTestsAbstract {
     }
 
     @Test
-    void whenGetAllActiveAlertsThenGotAll() {
+    void whengetAllAlertsThenGotAll() {
         createTestNonActiveAlert(testUser);
 
         Alert[] alerts = given().port(port)
@@ -82,24 +83,28 @@ class AlertControllerTests extends AlertTestsAbstract {
                 .then()
                 .statusCode(200);
 
-        List<Alert> alertList = alertService.getAllActiveAlerts();
+        List<Alert> alertList = alertRepository.findAll();
         assertEquals(TWO_ELEMENT_LIST_SIZE, alertList.size());
     }
 
     @Test
-    void whenEndAlertWithWrongRoleThenAlertAddPermissionException() {
+    void whenEndAlertWithWrongRoleThenGotInvalidPermission() {
         changeTestUserRole(UserRole.USER);
 
         UserAlert userAlert = buildTestUserAlert(AlertType.GATHER);
 
-        given().port(port)
+        ServerResponse response = given().port(port)
                 .header(AUTHORIZATION, authorizationHeader)
                 .header("Content-Type","application/json")
                 .header("Accept","application/json")
                 .body(userAlert)
                 .post("/api/alerts/add")
                 .then()
-                .statusCode(500);
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PERMISSION, response);
     }
 
     @Test
@@ -116,60 +121,82 @@ class AlertControllerTests extends AlertTestsAbstract {
     }
 
     @Test
-    void whenEndAlertThatDoesNotExistThenAlertDoesNotExistsException() {
-        given().port(port)
+    void whenEndAlertThatDoesNotExistThenGotNotFound() {
+        ServerResponse response = given().port(port)
                 .header(AUTHORIZATION, authorizationHeader)
                 .param("alertId", NOT_EXISTING_ALERT_ID)
                 .put("/api/alerts/end")
                 .then()
-                .statusCode(500);
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.NOT_FOUND, response);
     }
 
     @Test
-    void whenEndAlertForNotTheSameUserThenAlertUpdatePermissionException() {
+    void whenEndAlertForNotTheSameUserThenGotInvalidPermission() {
         changeTestUserRole(UserRole.USER);
 
         User user = buildTestUser(USER2_EMAIL, USER_PASSWORD, USER2_NAME, UserRole.USER);
         Alert alert = buildTestAlert(user);
 
-        given().port(port)
+        alertRepository.save(alert);
+
+        ServerResponse response = given().port(port)
                 .header(AUTHORIZATION, authorizationHeader)
                 .param("alertId", alert.getId())
                 .put("/api/alerts/end")
                 .then()
-                .statusCode(500);
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PERMISSION, response);
     }
 
     @Test
     void whenEndAlertUsingManagerUserThenAlertIsEnded() {
         changeTestUserRole(UserRole.MANAGER);
 
-        Alert alert = given().port(port)
+        ServerResponse response = given().port(port)
                 .header(AUTHORIZATION, authorizationHeader)
                 .param("alertId", testAlert.getId())
                 .put("/api/alerts/end")
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(Alert.class);
+                .as(ServerResponse.class);
 
-        assertNotNull(alert.getEndDate());
+        Optional<Alert> possibleAlert = alertRepository.findAll().stream()
+                .filter(a -> a.getId().equals(testAlert.getId()))
+                .findFirst();
+
+        assertTrue(possibleAlert.isPresent());
+        assertEquals(ServerResponse.OK, response);
+        assertNotNull(possibleAlert.get().getEndDate());
     }
 
     @Test
     void whenEndAlertUsingOwnerUserThenAlertIsEnded() {
         changeTestUserRole(UserRole.OWNER);
 
-        Alert alert = given().port(port)
+        ServerResponse response = given().port(port)
                 .header(AUTHORIZATION, authorizationHeader)
                 .param("alertId", testAlert.getId())
                 .put("/api/alerts/end")
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(Alert.class);
+                .as(ServerResponse.class);
 
-        assertNotNull(alert.getEndDate());
+        Optional<Alert> possibleAlert = alertRepository.findAll().stream()
+                .filter(a -> a.getId().equals(testAlert.getId()))
+                .findFirst();
+
+        assertTrue(possibleAlert.isPresent());
+        assertEquals(ServerResponse.OK, response);
+        assertNotNull(possibleAlert.get().getEndDate());
     }
 
     @Test
@@ -179,15 +206,22 @@ class AlertControllerTests extends AlertTestsAbstract {
         testAlert.setEndDate(dateTime);
         alertRepository.save(testAlert);
 
-        Alert alert = given().port(port)
+        ServerResponse response = given().port(port)
                 .header(AUTHORIZATION, authorizationHeader)
                 .param("alertId", testAlert.getId())
                 .put("/api/alerts/end")
                 .then()
                 .statusCode(200)
                 .extract()
-                .as(Alert.class);
+                .as(ServerResponse.class);
 
-        assertEquals(dateTime.getMonth(), alert.getEndDate().getMonth());
+        Optional<Alert> possibleAlert = alertRepository.findAll().stream()
+                .filter(a -> a.getId().equals(testAlert.getId()))
+                .findFirst();
+
+        assertTrue(possibleAlert.isPresent());
+        assertEquals(ServerResponse.OK, response);
+        assertNotNull(possibleAlert.get().getEndDate());
+        assertEquals(dateTime.getMonth(), possibleAlert.get().getEndDate().getMonth());
     }
 }
