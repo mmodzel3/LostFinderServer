@@ -4,6 +4,7 @@ import com.github.mmodzel3.lostfinderserver.server.ServerResponse;
 import com.github.mmodzel3.lostfinderserver.user.User;
 import com.github.mmodzel3.lostfinderserver.user.UserService;
 import com.github.mmodzel3.lostfinderserver.user.UserTestsAbstract;
+import io.netty.util.internal.StringUtil;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
@@ -22,8 +23,10 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class RegisterControllerTests extends UserTestsAbstract {
     private static final String USER_EMAIL2 = "test2@test.com";
     private static final String USER_NAME2 = "Test2";
-    private static final String SERVER_PASSWORD = "1234";
-    private static final String WRONG_SERVER_PASSWORD = "123!!!";
+    private static final String SERVER_PASSWORD = "12345678";
+    private static final String WRONG_SERVER_PASSWORD = "12345678!!!";
+    private static final String TOO_SHORT_PASSWORD = "1";
+    private static final int SERVER_MIN_PASSWORD_LENGTH = 2;
 
     @LocalServerPort
     int port;
@@ -40,6 +43,7 @@ class RegisterControllerTests extends UserTestsAbstract {
     @BeforeEach
     void setUp() {
         registerService.serverPassword = SERVER_PASSWORD;
+        registerService.minPasswordLength = SERVER_MIN_PASSWORD_LENGTH;
     }
 
     @AfterEach
@@ -102,8 +106,6 @@ class RegisterControllerTests extends UserTestsAbstract {
 
     @Test
     void whenRegisterWithWrongServerPasswordThenItIsNotRegistered() {
-        createTestUser();
-
         ServerResponse response = given().port(port)
                 .param("email", USER_EMAIL2)
                 .param("password", USER_PASSWORD)
@@ -116,5 +118,53 @@ class RegisterControllerTests extends UserTestsAbstract {
                 .as(ServerResponse.class);
 
         assertEquals(ServerResponse.INVALID_PERMISSION, response);
+    }
+
+    @Test
+    void whenRegisterWithBlankEmailThenItIsNotRegistered() {
+        ServerResponse response = given().port(port)
+                .param("email", StringUtil.EMPTY_STRING)
+                .param("password", USER_PASSWORD)
+                .param("serverPassword", SERVER_PASSWORD)
+                .param("username", USER_NAME)
+                .post("register")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PARAM, response);
+    }
+
+    @Test
+    void whenRegisterWithTooShortPasswordThenItIsNotRegistered() {
+        ServerResponse response = given().port(port)
+                .param("email", StringUtil.EMPTY_STRING)
+                .param("password", USER_PASSWORD)
+                .param("serverPassword", SERVER_PASSWORD)
+                .param("username", USER_NAME)
+                .post("register")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PARAM, response);
+    }
+
+    @Test
+    void whenRegisterWithBlankUsernameThenItIsNotRegistered() {
+        ServerResponse response = given().port(port)
+                .param("email", USER_EMAIL2)
+                .param("password", USER_PASSWORD)
+                .param("serverPassword", SERVER_PASSWORD)
+                .param("username", StringUtil.EMPTY_STRING)
+                .post("register")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PARAM, response);
     }
 }

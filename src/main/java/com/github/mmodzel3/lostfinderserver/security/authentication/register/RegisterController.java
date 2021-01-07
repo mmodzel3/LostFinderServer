@@ -26,6 +26,8 @@ class RegisterController {
             return ServerResponse.DUPLICATED;
         } catch (InvalidServerPasswordException e) {
             return ServerResponse.INVALID_PERMISSION;
+        } catch (InvalidRegisterParamsException e) {
+            return ServerResponse.INVALID_PARAM;
         }
     }
 }

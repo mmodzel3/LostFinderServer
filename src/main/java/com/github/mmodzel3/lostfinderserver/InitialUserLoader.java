@@ -10,7 +10,7 @@ import org.springframework.stereotype.Component;
 public class InitialUserLoader implements ApplicationRunner {
 
     private static final String USER_EMAIL = "admin@owner.com";
-    private static final String USER_PASSWORD = "admin";
+    private static final String USER_PASSWORD = "admin123";
     private static final String USER_NAME = "Owner";
 
     private final RegisterService registerService;

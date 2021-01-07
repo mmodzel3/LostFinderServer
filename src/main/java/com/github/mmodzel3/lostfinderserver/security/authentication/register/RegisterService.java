@@ -17,13 +17,20 @@ public class RegisterService {
     @Value("${register.server.password:}")
     String serverPassword;
 
+    @Value("${register.min.password.length:8}")
+    int minPasswordLength;
+
     RegisterService(UserService userService, PasswordEncoder passwordEncoder) {
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
     }
 
     User register(String email, String password, String serverPassword, String username, UserRole role)
-            throws AccountExistsException, InvalidServerPasswordException {
+            throws AccountExistsException, InvalidServerPasswordException, InvalidRegisterParamsException {
+        if (email.length() == 0 || password.length() < minPasswordLength || username.length() == 0) {
+            throw new InvalidRegisterParamsException();
+        }
+
         if (!this.serverPassword.isEmpty() && !this.serverPassword.equals(serverPassword)) {
             throw new InvalidServerPasswordException();
         }
@@ -41,7 +48,7 @@ public class RegisterService {
     }
 
     User register(String email, String password, String serverPassword, String username)
-            throws AccountExistsException, InvalidServerPasswordException {
+            throws AccountExistsException, InvalidServerPasswordException, InvalidRegisterParamsException {
         return register(email, password, serverPassword, username, UserRole.USER);
     }
 
@@ -49,7 +56,7 @@ public class RegisterService {
         try {
             register(email, password, username, serverPassword, role);
             return true;
-        } catch (AccountExistsException | InvalidServerPasswordException e) {
+        } catch (AccountExistsException | InvalidServerPasswordException | InvalidRegisterParamsException e) {
             return false;
         }
     }
