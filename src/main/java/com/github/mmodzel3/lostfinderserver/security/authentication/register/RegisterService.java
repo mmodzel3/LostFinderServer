@@ -54,7 +54,7 @@ public class RegisterService {
 
     public boolean registerIfNotExists(String email, String password, String username, UserRole role) {
         try {
-            register(email, password, username, serverPassword, role);
+            register(email, password, serverPassword, username, role);
             return true;
         } catch (AccountExistsException | InvalidServerPasswordException | InvalidRegisterParamsException e) {
             return false;
