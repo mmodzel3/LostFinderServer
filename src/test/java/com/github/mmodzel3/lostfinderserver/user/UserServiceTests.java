@@ -335,4 +335,17 @@ class UserServiceTests extends UserTestsAbstract {
         Optional<User> possibleUser = userRepository.findByEmail(USER2_EMAIL);
         assertFalse(possibleUser.isPresent());
     }
+
+    @Test
+    void whenClearLoggedUserDataThenDataIsCleared() {
+        LocalDateTime lastUpdate = testUser.getLastUpdateDate();
+
+        userService.clearLoggedUserData(testUser);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER_EMAIL);
+        assertTrue(possibleUser.isPresent());
+        assertNull(possibleUser.get().getNotificationDestToken());
+        assertNull(possibleUser.get().getLocation());
+        assertTrue(lastUpdate.isBefore(possibleUser.get().getLastUpdateDate()));
+    }
 }

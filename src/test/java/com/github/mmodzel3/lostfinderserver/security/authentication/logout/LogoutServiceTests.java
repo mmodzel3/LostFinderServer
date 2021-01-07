@@ -35,12 +35,15 @@ class LogoutServiceTests extends AuthenticatedUserTestsAbstract {
     }
 
     @Test
-    void whenLogoutThenUserNotificationDestTokenIsCleared() {
+    void whenLogoutThenUserNotificationDestTokenAndLocationIsCleared() {
+        LocalDateTime lastUpdate = testUser.getLastUpdateDate();
+
         logoutService.logout(testUser);
 
         Optional<User> possibleUser = userService.findUserByEmail(USER_EMAIL);
         assertTrue(possibleUser.isPresent());
         assertNull(possibleUser.get().getNotificationDestToken());
+        assertTrue(lastUpdate.isBefore(possibleUser.get().getLastUpdateDate()));
     }
 
     @Test

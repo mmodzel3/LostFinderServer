@@ -55,6 +55,19 @@ public class UserService {
         userRepository.save(user);
     }
 
+    public void updateUserLocation(User user, Location location) {
+        user.setLocation(location);
+        user.setLastUpdateDate(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
+    public void clearLoggedUserData(User user) {
+        user.setLocation(null);
+        user.setNotificationDestToken(null);
+        user.setLastUpdateDate(LocalDateTime.now());
+        userRepository.save(user);
+    }
+
     public void updateUserLoginDateToNow(User user) {
         LocalDateTime now = LocalDateTime.now();
         user.setLastLoginDate(now);
@@ -126,11 +139,5 @@ public class UserService {
         } else {
             throw new UserUpdatePermissionException();
         }
-    }
-
-    void updateUserLocation(User user, Location location) {
-        user.setLocation(location);
-        user.setLastUpdateDate(LocalDateTime.now());
-        userRepository.save(user);
     }
 }

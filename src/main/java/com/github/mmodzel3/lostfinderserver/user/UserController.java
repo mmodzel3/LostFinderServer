@@ -33,7 +33,20 @@ public class UserController {
     private ServerResponse updateUserLocation(@AuthenticationPrincipal Authentication authentication,
                                               @RequestBody Location location) {
         User user = (User) authentication.getPrincipal();
+
+        if (location.getLongitude() == null || location.getLatitude() == null) {
+            location = null;
+        }
+
         userService.updateUserLocation(user, location);
+
+        return OK;
+    }
+
+    @PostMapping("/api/user/location/clear")
+    private ServerResponse clearUserLocation(@AuthenticationPrincipal Authentication authentication) {
+        User user = (User) authentication.getPrincipal();
+        userService.updateUserLocation(user, null);
 
         return OK;
     }

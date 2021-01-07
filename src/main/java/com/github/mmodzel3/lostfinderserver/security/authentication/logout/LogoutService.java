@@ -23,7 +23,7 @@ public class LogoutService {
     }
 
     public void logout(User user) {
-        userService.updateUserNotificationDestToken(user, null);
+        userService.clearLoggedUserData(user);
     }
 
     @Scheduled(cron = "${logout.notification.clean.cron}")

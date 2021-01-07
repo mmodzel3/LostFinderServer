@@ -100,6 +100,72 @@ class UserControllerTests extends AuthenticatedUserTestsAbstract {
     }
 
     @Test
+    void whenUpdateUserLocationWithNullLatitudeThenLocationIsCleared() {
+        Location location = new Location(null, TEST_LONGITUDE);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHORIZATION, authorizationHeader)
+                .header("Content-Type","application/json")
+                .header("Accept","application/json")
+                .body(location)
+                .post("/api/user/location")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER_EMAIL);
+
+        assertEquals(ServerResponse.OK, response);
+        assertTrue(possibleUser.isPresent());
+        assertNull(possibleUser.get().getLocation());
+        assertNotEquals(testUser.getLastUpdateDate(), possibleUser.get().getLastUpdateDate());
+    }
+
+    @Test
+    void whenUpdateUserLocationWithNullLongitudeThenLocationIsCleared() {
+        Location location = new Location(TEST_LATITUDE, null);
+
+        ServerResponse response = given().port(port)
+                .header(AUTHORIZATION, authorizationHeader)
+                .header("Content-Type","application/json")
+                .header("Accept","application/json")
+                .body(location)
+                .post("/api/user/location")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER_EMAIL);
+
+        assertEquals(ServerResponse.OK, response);
+        assertTrue(possibleUser.isPresent());
+        assertNull(possibleUser.get().getLocation());
+        assertNotEquals(testUser.getLastUpdateDate(), possibleUser.get().getLastUpdateDate());
+    }
+
+    @Test
+    void whenClearUserLocationThenItIsCleared() {
+        ServerResponse response = given().port(port)
+                .header(AUTHORIZATION, authorizationHeader)
+                .header("Content-Type","application/json")
+                .header("Accept","application/json")
+                .post("/api/user/location/clear")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER_EMAIL);
+
+        assertEquals(ServerResponse.OK, response);
+        assertTrue(possibleUser.isPresent());
+        assertNull(possibleUser.get().getLocation());
+        assertNotEquals(testUser.getLastUpdateDate(), possibleUser.get().getLastUpdateDate());
+    }
+
+    @Test
     void whenUpdateNotificationDestTokenThenGotItUpdated() {
         ServerResponse response = given().port(port)
                 .header(AUTHORIZATION, authorizationHeader)

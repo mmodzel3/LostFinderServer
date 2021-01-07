@@ -39,7 +39,7 @@ class LogoutControllerTests extends AuthenticatedUserTestsAbstract {
     }
 
     @Test
-    void whenLogoutThenUserNotificationDestTokenIsCleared() {
+    void whenLogoutThenUserNotificationDestTokenAndLocationIsCleared() {
         given().port(port)
                 .header(AUTHORIZATION, authorizationHeader)
                 .post("/api/logout")
@@ -49,5 +49,7 @@ class LogoutControllerTests extends AuthenticatedUserTestsAbstract {
         Optional<User> possibleUser = userService.findUserByEmail(USER_EMAIL);
         assertTrue(possibleUser.isPresent());
         assertNull(possibleUser.get().getNotificationDestToken());
+        assertNull(possibleUser.get().getLocation());
+        assertTrue(testUser.getLastUpdateDate().isBefore(possibleUser.get().getLastUpdateDate()));
     }
 }
