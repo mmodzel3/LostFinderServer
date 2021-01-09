@@ -37,7 +37,7 @@ public class UserService {
     }
 
     public Optional<User> findUserByEmail(String email) {
-        return userRepository.findByEmail(email);
+        return userRepository.findByEmail(email.toLowerCase());
     }
 
     public void addUser(User user) {
@@ -127,7 +127,7 @@ public class UserService {
         Optional<User> possibleUser = findUserByEmail(userToDeleteEmail);
         User user = possibleUser.orElseThrow(UserNotFoundException::new);
 
-        if (userChanging.isMorePrivileged(user) || userChanging.getEmail().equals(userToDeleteEmail)){
+        if (userChanging.isMorePrivileged(user) || userChanging.getEmail().equals(user.getEmail())){
             String uuid = UUID.randomUUID().toString();
             String deletedUsernamePostfix = " [" + DELETED + " " + uuid + "]";
             String deletedEmailPostfix = DELETED + uuid;

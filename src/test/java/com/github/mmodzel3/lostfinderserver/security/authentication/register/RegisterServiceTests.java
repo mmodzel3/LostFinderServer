@@ -18,6 +18,7 @@ import static org.junit.jupiter.api.Assertions.*;
 class RegisterServiceTests extends UserTestsAbstract {
     private static final String USER_EMAIL2 = "test2@test.com";
     private static final String USER_NAME2 = "Test2";
+    private static final String USER_INVALID_EMAIL = "invalid_email";
     private static final String SERVER_PASSWORD = "12345678";
     private static final String WRONG_SERVER_PASSWORD = "12345678!!!";
     private static final String TOO_SHORT_PASSWORD = "1";
@@ -106,5 +107,13 @@ class RegisterServiceTests extends UserTestsAbstract {
 
         assertThrows(InvalidRegisterParamsException.class, () ->
                 registerService.register(USER_EMAIL, USER_PASSWORD, SERVER_PASSWORD, StringUtil.EMPTY_STRING, USER_ROLE));
+    }
+
+    @Test
+    void whenRegisterWithInvalidEmailThenUserIsNotRegistered() {
+        createTestUser();
+
+        assertThrows(InvalidRegisterParamsException.class, () ->
+                registerService.register(USER_INVALID_EMAIL, USER_PASSWORD, SERVER_PASSWORD, USER_NAME2, USER_ROLE));
     }
 }

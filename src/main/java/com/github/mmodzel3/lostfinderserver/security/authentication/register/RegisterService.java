@@ -8,8 +8,12 @@ import org.springframework.dao.DuplicateKeyException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.regex.Pattern;
+
 @Service
 public class RegisterService {
+    private final static Pattern EMAIL_REGEX =
+            Pattern.compile("[a-z0-9!#$%&'*+/=?^_`{|}~-]+(?:.[a-z0-9!#$%&'*+/=?^_`{|}~-]+)*@(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?", Pattern.CASE_INSENSITIVE);
 
     private final UserService userService;
     private final PasswordEncoder passwordEncoder;
@@ -27,7 +31,7 @@ public class RegisterService {
 
     User register(String email, String password, String serverPassword, String username, UserRole role)
             throws AccountExistsException, InvalidServerPasswordException, InvalidRegisterParamsException {
-        if (email.length() == 0 || password.length() < minPasswordLength || username.length() == 0) {
+        if (email.length() == 0 || password.length() < minPasswordLength || username.length() == 0 || !isEmailValid(email)) {
             throw new InvalidRegisterParamsException();
         }
 
@@ -35,6 +39,7 @@ public class RegisterService {
             throw new InvalidServerPasswordException();
         }
 
+        email = email.toLowerCase();
         String encodedPassword = passwordEncoder.encode(password);
         User user = new User(email, encodedPassword, username, role);
 
@@ -59,5 +64,9 @@ public class RegisterService {
         } catch (AccountExistsException | InvalidServerPasswordException | InvalidRegisterParamsException e) {
             return false;
         }
+    }
+
+    private boolean isEmailValid(String email) {
+        return EMAIL_REGEX.matcher(email).matches();
     }
 }

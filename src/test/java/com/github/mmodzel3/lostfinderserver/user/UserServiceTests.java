@@ -81,6 +81,14 @@ class UserServiceTests extends UserTestsAbstract {
     }
 
     @Test
+    void whenFindUserByEmailWithDifferentCaseThenGotIt() {
+        Optional<User> user = userService.findUserByEmail(testUser.getEmail().toUpperCase());
+
+        assertTrue(user.isPresent());
+        assertEquals(testUser.getId(), user.get().getId());
+    }
+
+    @Test
     void whenAddUserThenItIsAdded() {
         User user = new User(USER2_EMAIL, USER_PASSWORD, USER2_NAME, USER_ROLE);
 

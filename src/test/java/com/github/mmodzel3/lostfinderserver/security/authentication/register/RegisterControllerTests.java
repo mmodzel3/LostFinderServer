@@ -22,6 +22,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 class RegisterControllerTests extends UserTestsAbstract {
     private static final String USER_EMAIL2 = "test2@test.com";
+    private static final String USER_INVALID_EMAIL = "invalid_email";
     private static final String USER_NAME2 = "Test2";
     private static final String SERVER_PASSWORD = "12345678";
     private static final String WRONG_SERVER_PASSWORD = "12345678!!!";
@@ -156,6 +157,22 @@ class RegisterControllerTests extends UserTestsAbstract {
     void whenRegisterWithBlankUsernameThenItIsNotRegistered() {
         ServerResponse response = given().port(port)
                 .param("email", USER_EMAIL2)
+                .param("password", USER_PASSWORD)
+                .param("serverPassword", SERVER_PASSWORD)
+                .param("username", StringUtil.EMPTY_STRING)
+                .post("register")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        assertEquals(ServerResponse.INVALID_PARAM, response);
+    }
+
+    @Test
+    void whenRegisterWithInvalidEmailThenItIsNotRegistered() {
+        ServerResponse response = given().port(port)
+                .param("email", USER_INVALID_EMAIL)
                 .param("password", USER_PASSWORD)
                 .param("serverPassword", SERVER_PASSWORD)
                 .param("username", StringUtil.EMPTY_STRING)
