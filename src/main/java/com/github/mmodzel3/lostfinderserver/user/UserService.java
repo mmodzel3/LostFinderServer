@@ -1,6 +1,7 @@
 package com.github.mmodzel3.lostfinderserver.user;
 
 import com.github.mmodzel3.lostfinderserver.location.Location;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -13,6 +14,9 @@ import java.util.stream.Collectors;
 @Service
 public class UserService {
     private final static String DELETED = "-DELETED";
+
+    @Value("${user.min.password.length:8}")
+    int minPasswordLength;
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -77,7 +81,7 @@ public class UserService {
     }
 
     boolean updateUserPassword(User user, String oldPassword, String newPassword) {
-        if (passwordEncoder.matches(oldPassword, user.getPassword())) {
+        if (passwordEncoder.matches(oldPassword, user.getPassword()) && newPassword.length() >= minPasswordLength) {
             String encodedPassword = passwordEncoder.encode(newPassword);
 
             user.setPassword(encodedPassword);

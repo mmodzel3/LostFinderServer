@@ -15,6 +15,9 @@ public abstract class UserTestsAbstract {
     protected static final String USER_NAME = "Test";
     protected static final UserRole USER_ROLE = UserRole.OWNER;
 
+    private static final int MIN_PASSWORD_LENGTH = 5;
+    private static final String TOO_SHORT_PASSWORD = "123";
+
     @Autowired
     UserRepository userRepository;
 

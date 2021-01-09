@@ -32,6 +32,9 @@ class UserServiceTests extends UserTestsAbstract {
     private static final String USER_NEW_PASSWORD = "new_password";
     private static final String USER_INVALID_PASSWORD = "bad_password";
 
+    private static final int MIN_PASSWORD_LENGTH = 5;
+    private static final String USER_TOO_SHORT_PASSWORD = "123";
+
     @Autowired
     UserService userService;
 
@@ -40,6 +43,8 @@ class UserServiceTests extends UserTestsAbstract {
 
     @BeforeEach
     void setUp() {
+        userService.minPasswordLength = MIN_PASSWORD_LENGTH;
+
         deleteAllUsers();
         createTestUser();
     }
@@ -149,6 +154,16 @@ class UserServiceTests extends UserTestsAbstract {
         assertTrue(changed);
         assertTrue(possibleUser.isPresent());
         assertTrue(passwordEncoder.matches(USER_NEW_PASSWORD, possibleUser.get().getPassword()));
+    }
+
+    @Test
+    void whenUpdateUserPasswordWithTooShortPasswordThenItIsNotChanged() {
+        boolean changed = userService.updateUserPassword(testUser, USER_PASSWORD, USER_TOO_SHORT_PASSWORD);
+
+        Optional<User> possibleUser = userRepository.findByEmail(testUser.getEmail());
+        assertFalse(changed);
+        assertTrue(possibleUser.isPresent());
+        assertTrue(passwordEncoder.matches(USER_PASSWORD, possibleUser.get().getPassword()));
     }
 
     @Test

@@ -17,7 +17,7 @@ public class RegisterService {
     @Value("${register.server.password:}")
     String serverPassword;
 
-    @Value("${register.min.password.length:8}")
+    @Value("${user.min.password.length:8}")
     int minPasswordLength;
 
     RegisterService(UserService userService, PasswordEncoder passwordEncoder) {

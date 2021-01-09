@@ -5,6 +5,7 @@ import com.github.mmodzel3.lostfinderserver.server.ServerResponse;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 
@@ -28,11 +29,19 @@ class UserControllerTests extends AuthenticatedUserTestsAbstract {
     private static final String USER2_EMAIL = "user2@example.com";
     private static final String USER2_NAME = "user2";
 
+    private static final int MIN_PASSWORD_LENGTH = 5;
+    private static final String USER_TOO_SHORT_PASSWORD = "123";
+
     @LocalServerPort
     int port;
 
+    @Autowired
+    UserService userService;
+
     @BeforeEach
     void setUp() {
+        userService.minPasswordLength = MIN_PASSWORD_LENGTH;
+
         deleteAllUsers();
         createTestUser();
     }
@@ -222,6 +231,26 @@ class UserControllerTests extends AuthenticatedUserTestsAbstract {
         assertEquals(ServerResponse.OK, response);
         assertTrue(possibleUser.isPresent());
         assertTrue(passwordEncoder.matches(USER_NEW_PASSWORD, possibleUser.get().getPassword()));
+    }
+
+    @Test
+    void whenUpdateUserPasswordWithTooShortPasswordThenItIsNotUpdated() {
+        ServerResponse response = given().port(port)
+                .header(AUTHORIZATION, authorizationHeader)
+                .header("Accept","application/json")
+                .param("oldPassword", USER_PASSWORD)
+                .param("newPassword", USER_TOO_SHORT_PASSWORD)
+                .post("/api/user/password")
+                .then()
+                .statusCode(200)
+                .extract()
+                .as(ServerResponse.class);
+
+        Optional<User> possibleUser = userRepository.findByEmail(USER_EMAIL);
+
+        assertEquals(ServerResponse.INVALID_PARAM, response);
+        assertTrue(possibleUser.isPresent());
+        assertTrue(passwordEncoder.matches(USER_PASSWORD, possibleUser.get().getPassword()));
     }
 
     @Test
