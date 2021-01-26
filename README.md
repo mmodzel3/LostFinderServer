@@ -5,7 +5,7 @@
 * [Used external services](#used-external-services)
 * [Setup](#setup)
 
-# General info
+## General info
 This project is a server for Android application LostFinder which code can be found on:
 https://github.com/mmodzel3/LostFinder
 
@@ -18,16 +18,16 @@ What is more, actual weather data can be downloaded from OpenWeatherMap: https:/
 Application distinguishes three roles: User, Manager and Owner.
 With appropriate permissions users' accounts can be managed from application.
 
-# Technologies
+## Technologies
 * Java Spring
 * Gradle
 * JUnit
 * MongoDB
 
-# Used external services
+## Used external services
 * Firebase Cloud Messaging
 
-# Setup
+## Setup
 Before compiling project to run FCM (Firebase Cloud Messaging) notifications "firebase-service-account.json" 
 has to be added to "src/main/resources" directory. 
 It should contain private authorization keys for managing notifications by server.
